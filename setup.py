@@ -19,7 +19,6 @@ setup(
         "ea06a560e32a16b579823d9e7de36a038cf08908",
         "importnb==0.6.2",
         "matplotlib==3.4.2",
-        "tensorflow==2.5.0",
         "mlflow==1.18"
     ],
     license='Apache License 2.0',
