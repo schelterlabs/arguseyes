@@ -1,0 +1,8 @@
+.idea/
+.ipynb_checkpoints/
+argos.egg-info/
+playing*.ipynb
+venv/
+*.swp
+*.py[co]
+
