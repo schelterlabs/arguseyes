@@ -1,8 +1,5 @@
 from mlinspect.inspections._inspection_input import OperatorType
 
-from arguseyes.templates.source import Source, SourceType
-
-
 def _sources_with_one_to_one_correspondence_to_feature_vectors(feature_matrix_lineage_per_row):
     rows_from_operator = {}
     operators_with_duplicates = set()

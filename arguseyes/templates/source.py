@@ -6,8 +6,8 @@ from enum import Enum
 
 
 class SourceType(Enum):
-    TRAIN_FACTS = "TrainFacts"
-    TRAIN_DIMENSIONS = "TrainDimensions"
+    FACTS = "Facts"
+    DIMENSION = "Dimension"
 
 
 @dataclasses.dataclass

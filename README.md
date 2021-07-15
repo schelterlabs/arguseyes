@@ -1,6 +1,6 @@
-# Argos
+# ArgusEyes
 
-Argos is a research prototype for an ML CI server, heavily using [mlinspect](https://github.com/stefan-grafberger/mlinspect).
+ArgusEyes is a research prototype for an ML CI server, heavily using [mlinspect](https://github.com/stefan-grafberger/mlinspect).
 
 ## Example
 
@@ -9,14 +9,14 @@ __Execute a binary classification pipeline__
 Pipelines are written using pandas and sklearn, without manual annotation or instrumentation, checkout this [example for income classification](https://github.com/schelterlabs/argos/blob/main/argos/example_pipelines/income_classifier.py).
 
 ```python
-from argos.templates.classification import BinaryClassificationPipeline
+from arguseyes.templates.classification import ClassificationPipeline
 
-pipeline = BinaryClassificationPipeline.from_py_file('argos/example_pipelines/income_classifier.py')
+pipeline = ClassificationPipeline.from_py_file('argos/example_pipelines/income_classifier.py')
 ```
 
 __Automatically detect violations of best practices in ML__
 ```python
-from argos.issues import train_test_overlap, unnormalised_features
+from arguseyes.issues import train_test_overlap, unnormalised_features
 
 train_test_overlap.detect(pipeline)
 unnormalised_features.detect(pipeline)
@@ -24,7 +24,7 @@ unnormalised_features.detect(pipeline)
 
 __Automatically detect distribution shift__
 ```python
-from argos.issues import label_shift, covariate_shift
+from arguseyes.issues import label_shift, covariate_shift
 
 label_shift.detect(pipeline)
 covariate_shift.detect(pipeline)
@@ -32,7 +32,7 @@ covariate_shift.detect(pipeline)
 
 __Compute metadata for the pipeline inputs, e.g., whether a given record is used by the model or not__
 ```python
-from argos.refinements import record_lineage
+from arguseyes.refinements import record_lineage
 
 input_df_with_usage = record_lineage.refine(pipeline)[0]
 

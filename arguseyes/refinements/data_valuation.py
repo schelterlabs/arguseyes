@@ -1,6 +1,8 @@
 import numpy as np
 
 from mlinspect.inspections._inspection_input import OperatorType
+
+from arguseyes.templates.source import SourceType, Source
 from arguseyes.utils.dag_extraction import find_dag_node_by_type
 
 
@@ -24,37 +26,11 @@ def get_shapley_value_np(X_train, y_train, X_test, y_test, K=1):
     return np.mean(s, axis=1)
 
 
-#TODO duplicated, refactor
-def _find_source_data_with_lineage(start_node_id, result, lineage_inspection):
-    nodes_to_search = []
-    nodes_processed = set()
-
-    source_datasets = []
-
-    nodes_to_search.append(start_node_id)
-
-    while len(nodes_to_search) > 0:
-        current_node_id = nodes_to_search.pop()
-        for source, target in result.dag.edges:
-            if target.node_id == current_node_id:
-                if source.node_id not in nodes_processed and source.node_id not in nodes_to_search:
-                    nodes_to_search.append(source.node_id)
-                    if source.operator_info.operator == OperatorType.DATA_SOURCE:
-                        data_with_lineage = result.dag_node_to_inspection_results[source][lineage_inspection]
-
-                        source_datasets.append(data_with_lineage)
-
-        nodes_processed.add(current_node_id)
-
-    return source_datasets
-
-
-def _add_shapley(row, shapley_values_by_source_and_row_id):
+def _add_shapley(row, shapley_values_by_row_id):
     polynomial = row['mlinspect_lineage']
     for entry in polynomial:
-        if entry.operator_id in shapley_values_by_source_and_row_id:
-            if entry.row_id in shapley_values_by_source_and_row_id[entry.operator_id]:
-                return shapley_values_by_source_and_row_id[entry.operator_id][entry.row_id]
+        if entry.row_id in shapley_values_by_row_id:
+            return shapley_values_by_row_id[entry.row_id]
     return 0.0
 
 
@@ -78,32 +54,18 @@ def refine(classification_pipeline):
     inspection_result = result.dag_node_to_inspection_results[train_data_op][lineage_inspection]
     lineage_per_row = list(inspection_result['mlinspect_lineage'])
 
-    shapley_values_by_source_and_row_id = {}
+    fact_table_source = [train_source for train_source in classification_pipeline.train_sources
+                         if train_source.source_type == SourceType.FACTS][0]
 
-    #TODO this is probably wrong, we need to know how to distribute the shapley values correctly over joins
+    shapley_values_by_row_id = {}
+
     for polynomial, shapley_value in zip(lineage_per_row, shapley_values):
-        # TODO how to distribute them for more complex lineage?
         for entry in polynomial:
-            if entry.operator_id not in shapley_values_by_source_and_row_id:
-                shapley_values_by_source_and_row_id[entry.operator_id] = {}
+            if entry.operator_id == fact_table_source.operator_id:
+                shapley_values_by_row_id[entry.row_id] = shapley_value
 
-            shapley_values_by_source_and_row_id[entry.operator_id][entry.row_id] = shapley_value
+    data = fact_table_source.data
+    data['__arguseyes__shapley_value'] = data.apply(lambda row: _add_shapley(row, shapley_values_by_row_id), axis=1)
 
-    # TODO we need to detect the "star schema" here
-
-    source_datasets_with_lineage = \
-        _find_source_data_with_lineage(train_data_op.node_id, classification_pipeline.result,
-                                       classification_pipeline.lineage_inspection)
-
-    refined_datasets = []
-
-    for data_with_lineage in source_datasets_with_lineage:
-        data = data_with_lineage.copy(deep=True)
-
-        data['__argos__shapley_value'] = \
-            data.apply(lambda row: _add_shapley(row, shapley_values_by_source_and_row_id), axis=1)
-        data.drop(columns=['mlinspect_lineage'], inplace=True)
-
-        refined_datasets.append(data)
-
-    return refined_datasets
+    refined_source = Source(fact_table_source.operator_id, fact_table_source.source_type, data)
+    return refined_source

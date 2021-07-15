@@ -1,6 +1,6 @@
 .idea/
 .ipynb_checkpoints/
-argos.egg-info/
+arguseyes.egg-info/
 playing*.ipynb
 venv/
 *.swp
