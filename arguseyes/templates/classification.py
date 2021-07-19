@@ -1,5 +1,12 @@
+import os
+import mlflow
+from PIL import Image
+import json
+
 from mlinspect import PipelineInspector
 from mlinspect.inspections import RowLineage
+from mlinspect.utils import get_project_root
+from mlinspect.visualisation import save_fig_to_path
 
 from arguseyes.templates.extractors import feature_matrix_extractor
 from arguseyes.templates.extractors import source_extractor
@@ -17,8 +24,37 @@ class ClassificationPipeline:
         self.y_train = y_train
         self.y_test = y_test
 
+        mlflow.start_run()
+
+        m, n = X_train.shape
+
+        mlflow.log_param("arguseyes.X_train.num_rows", m)
+        mlflow.log_param("arguseyes.X_train.num_features", n)
+
+        dag_filename = os.path.join(str(get_project_root()), 'mlinspect-dag.png')
+        save_fig_to_path(result.dag, dag_filename)
+        dag_image = Image.open(dag_filename).convert("RGB")
+        mlflow.log_image(dag_image, 'arguseyes.dag.png')
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        mlflow.end_run()
+        pass
+
+    def detect_issue(self, issue_detector):
+        issue = issue_detector._detect(self)
+
+        mlflow.set_tag(f'arguseyes.issues.{issue.id}.is_present', issue.is_present)
+        mlflow.set_tag(f'arguseyes.issues.{issue.id}.details', json.dumps(issue.details))
+
+        return issue
+
     @staticmethod
     def _from_result(result, lineage_inspection):
+
+        # TODO persist with mlflow
 
         train_sources = source_extractor.extract_train_sources(result, lineage_inspection)
         test_sources = source_extractor.extract_test_sources(result, lineage_inspection)
@@ -47,7 +83,7 @@ class ClassificationPipeline:
 
 
     @staticmethod
-    def from_notebook(path_to_ipynb_file):
+    def from_notebook(path_to_ipynb_file, run_id):
         # TODO we need to get rid of this
         num_records = 100000
         lineage_inspection = RowLineage(num_records)

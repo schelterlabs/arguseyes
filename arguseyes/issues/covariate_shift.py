@@ -2,35 +2,37 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GridSearchCV
+# from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import roc_auc_score
 
+from arguseyes.issues._issue import IssueDetector, Issue
 
-def detect(classification_pipeline) -> bool:
 
-    X_train = classification_pipeline.X_train
-    X_test = classification_pipeline.X_test
+class CovariateShift(IssueDetector):
 
-    X_train_test_labeled = np.append(X_train, X_test, axis=0)
-    y_train_test_labeled = np.append(np.zeros((len(X_train), 1)), np.ones((len(X_test), 1)), axis=0)
+    def _detect(self, pipeline) -> Issue:
+        X_train = pipeline.X_train
+        X_test = pipeline.X_test
 
-    X_shift_train, X_shift_test, y_shift_train, y_shift_test = \
-        train_test_split(X_train_test_labeled, y_train_test_labeled, test_size=0.2)
+        X_train_test_labeled = np.append(X_train, X_test, axis=0)
+        y_train_test_labeled = np.append(np.zeros((len(X_train), 1)), np.ones((len(X_test), 1)), axis=0)
 
-    grid = {
-        'n_estimators': [10, 100],
-        'min_samples_leaf': [1, 5],
-    }
+        X_shift_train, X_shift_test, y_shift_train, y_shift_test = \
+            train_test_split(X_train_test_labeled, y_train_test_labeled, test_size=0.2)
 
-    clf = GridSearchCV(RandomForestClassifier(), grid)
-    clf = clf.fit(X_shift_train, y_shift_train)
+        # TODO enable again
+        # grid = {
+        #    'n_estimators': [10, 100],
+        #    'min_samples_leaf': [1, 5],
+        # }
+        # clf = GridSearchCV(RandomForestClassifier(), grid)
+        clf = RandomForestClassifier()
+        clf = clf.fit(X_shift_train, y_shift_train)
 
-    y_shift_predicted = clf.predict_proba(X_shift_test)
-    auc = roc_auc_score(y_shift_test, y_shift_predicted[:, 1])
+        y_shift_predicted = clf.predict_proba(X_shift_test)
+        auc = roc_auc_score(y_shift_test, y_shift_predicted[:, 1])
 
-    covariate_shift = auc > 0.7
+        auc_threshold = 0.7
+        covariate_shift = auc > auc_threshold
 
-    if covariate_shift:
-        print("Covariate shift between train and test?", covariate_shift, 'AuC', auc)
-
-    return covariate_shift
+        return Issue('covariate_shift', covariate_shift, {'test_size': 0.2, 'auc': auc, 'auc_threshold': auc_threshold})

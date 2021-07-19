@@ -17,5 +17,10 @@ def detect(classification_pipeline) -> bool:
     train_lineage = frozenset([frozenset(lineage) for lineage in train_data_with_lineage['mlinspect_lineage']])
     test_lineage = frozenset([frozenset(lineage) for lineage in test_data_with_lineage['mlinspect_lineage']])
 
+    overlap_lineage = train_lineage & test_lineage
+
+    if len(overlap_lineage) > 0:
+        print(f"Overlap between train/test with {len(overlap_lineage)} records")
+
     # TODO output tuples in the future
     return len(train_lineage & test_lineage) > 0

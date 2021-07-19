@@ -1,32 +1,47 @@
 import numpy as np
 
-
-def _is_binary(column):
-    unique_values = np.unique(column)
-    return len(unique_values) == 2 and 0.0 in unique_values and 1.0 in unique_values
+from arguseyes.issues._issue import IssueDetector, Issue
 
 
-def _has_zero_mean(column):
-    return np.isclose(np.mean(column), 0.0)
+class UnnormalisedFeatures(IssueDetector):
 
+    def _detect(self, pipeline) -> Issue:
+        X_train = pipeline.X_train
+        _, num_columns = X_train.shape
 
-def _has_unit_variance(column):
-    return np.isclose(np.var(column), 1.0)
+        unnormalised_feature_found = False
+        non_binary_features = []
+        non_zero_mean_features = []
+        non_unit_variance_features = []
 
+        for column_index in range(0, num_columns):
+            column = X_train[:, column_index]
+            if not self._is_binary(column):
+                non_binary_features.append(column_index)
+                if not self._has_zero_mean(column):
+                    non_zero_mean_features.append(column_index)
+                    unnormalised_feature_found = True
+                if not self._has_unit_variance(column):
+                    non_unit_variance_features.append(column_index)
+                    unnormalised_feature_found = True
 
-def detect(classification_pipeline) -> bool:
+        issue_details = {
+            'non_binary_features': non_binary_features,
+            'non_zero_mean_features': non_zero_mean_features,
+            'non_unit_variance_features': non_unit_variance_features
+        }
 
-    X_train = classification_pipeline.X_train
-    _, num_columns = X_train.shape
+        return Issue('unnormalised_features', unnormalised_feature_found, issue_details)
 
-    for column_index in range(0, num_columns):
-        column = X_train[:, column_index]
-        if not _is_binary(column):
-            if not _has_zero_mean(column):
-                print("Column", column_index, "does not have zero mean")
-                return True
-            if not _has_unit_variance(column):
-                print("Column", column_index, "does not have unit variance")
-                return True
+    @staticmethod
+    def _is_binary(column):
+        unique_values = np.unique(column)
+        return len(unique_values) == 2 and 0.0 in unique_values and 1.0 in unique_values
 
-    return False
+    @staticmethod
+    def _has_zero_mean(column):
+        return np.isclose(np.mean(column), 0.0)
+
+    @staticmethod
+    def _has_unit_variance(column):
+        return np.isclose(np.var(column), 1.0)

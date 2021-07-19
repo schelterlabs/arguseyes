@@ -1,22 +1,33 @@
 import numpy as np
 
-
-def _is_constant(column):
-    unique_values = np.unique(column)
-    return len(unique_values) == 1
+from arguseyes.issues._issue import IssueDetector, Issue
 
 
-def detect(classification_pipeline) -> bool:
+class ConstantFeatures(IssueDetector):
 
-    X_train = classification_pipeline.X_train
-    _, num_columns = X_train.shape
+    @staticmethod
+    def _is_constant(column):
+        unique_values = np.unique(column)
+        return len(unique_values) == 1
 
-    constant_column_found = False
+    def _detect(self, pipeline) -> Issue:
 
-    for column_index in range(0, num_columns):
-        column = X_train[:, column_index]
-        if _is_constant(column):
-            print("Column", column_index, "is constant")
-            constant_column_found = True
+        X_train = pipeline.X_train
+        _, num_columns = X_train.shape
 
-    return constant_column_found
+        constant_column_found = False
+
+        issue_details = {
+            'constant_feature_indices': [],
+            'nonconstant_feature_indices': []
+        }
+
+        for column_index in range(0, num_columns):
+            column = X_train[:, column_index]
+            if self._is_constant(column):
+                issue_details['constant_feature_indices'].append(column_index)
+                constant_column_found = True
+            else:
+                issue_details['nonconstant_feature_indices'].append(column_index)
+
+        return Issue('constant_features', constant_column_found, issue_details)
