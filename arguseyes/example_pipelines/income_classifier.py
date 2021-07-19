@@ -64,8 +64,8 @@ def create_training_pipeline():
     ])
 
 
-train_location = 'https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data'
-test_location = 'https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.test'
+train_location = 'datasets/income/adult.data'
+test_location = 'datasets/income/adult.test'
 
 government_employed = ['Federal-gov', 'State-gov']
 

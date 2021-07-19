@@ -13,11 +13,10 @@ from tensorflow.keras.models import Sequential
 
 
 def load_data(target_categories, start_date, verified_only):
-    abs_path = '/home/ssc/Entwicklung/projects/arguseyes/arguseyes/example_pipelines/'
-    reviews = pd.read_csv(f'{abs_path}datasets/amazon-reviews/reviews.csv.gz', compression='gzip', index_col=0)
-    products = pd.read_csv(f'{abs_path}datasets/amazon-reviews/products.csv', index_col=0)
-    categories = pd.read_csv(f'{abs_path}datasets/amazon-reviews/categories.csv', index_col=0)
-    ratings = pd.read_csv(f'{abs_path}datasets/amazon-reviews/ratings.csv', index_col=0)
+    reviews = pd.read_csv('datasets/amazon-reviews/reviews.csv.gz', compression='gzip', index_col=0)
+    products = pd.read_csv('datasets/amazon-reviews/products.csv', index_col=0)
+    categories = pd.read_csv('datasets/amazon-reviews/categories.csv', index_col=0)
+    ratings = pd.read_csv('datasets/amazon-reviews/ratings.csv', index_col=0)
 
     # Filter review data and categories
     reviews = reviews[reviews['review_date'] >= start_date]

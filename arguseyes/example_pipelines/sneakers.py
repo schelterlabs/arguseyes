@@ -14,10 +14,9 @@ def decode_image(img_str):
     return np.array([int(val) for val in img_str.split(':')])
 
 
-abs_path = '/home/ssc/Entwicklung/projects/arguseyes/arguseyes/example_pipelines/datasets/sneakers/'
-train_data = pd.read_csv(f'{abs_path}product_images.csv', converters={'image': decode_image})
+train_data = pd.read_csv(f'datasets/sneakers/product_images.csv', converters={'image': decode_image})
 
-product_categories = pd.read_csv(f'{abs_path}product_categories.csv')
+product_categories = pd.read_csv('datasets/sneakers/product_categories.csv')
 with_categories = train_data.merge(product_categories, on='category_id')
 
 categories_to_distinguish = ['Sneaker', 'Ankle boot']
