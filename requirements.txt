@@ -1,0 +1,6 @@
+mlinspect[dev] @ git+https://github.com/stefan-grafberger/mlinspect.git@ea06a560e32a16b579823d9e7de36a038cf08908
+importnb==0.6.2
+matplotlib==3.4.2
+mlflow==1.18
+numba==0.53
+icc-rt==2020.0.133

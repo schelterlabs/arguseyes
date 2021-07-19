@@ -8,6 +8,8 @@ from mlinspect.inspections import RowLineage
 from mlinspect.utils import get_project_root
 from mlinspect.visualisation import save_fig_to_path
 
+from arguseyes.issues._issue import IssueDetector
+from arguseyes.refinements._refinement import Refinement
 from arguseyes.templates.extractors import feature_matrix_extractor
 from arguseyes.templates.extractors import source_extractor
 
@@ -43,13 +45,17 @@ class ClassificationPipeline:
         mlflow.end_run()
         pass
 
-    def detect_issue(self, issue_detector):
+    def detect_issue(self, issue_detector: IssueDetector):
         issue = issue_detector._detect(self)
 
         mlflow.set_tag(f'arguseyes.issues.{issue.id}.is_present', issue.is_present)
         mlflow.set_tag(f'arguseyes.issues.{issue.id}.details', json.dumps(issue.details))
 
         return issue
+
+    def compute(self, refinement: Refinement):
+        # TODO Not sure whether it makes sense to persist these potentially large outputs
+        return refinement._compute(self)
 
     @staticmethod
     def _from_result(result, lineage_inspection):

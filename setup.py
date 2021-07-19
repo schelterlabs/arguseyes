@@ -6,6 +6,9 @@ from setuptools import setup, find_packages
 
 ROOT = os.path.dirname(__file__)
 
+with open(os.path.join(ROOT, "requirements.txt")) as f:
+    required = f.read().splitlines()
+
 setup(
     name="arguseyes",
     version="0.0.1.dev0",
@@ -14,14 +17,8 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(),
     include_package_data=True,
-    install_requires=[
-        "mlinspect[dev] @ git+https://github.com/stefan-grafberger/mlinspect.git@"
-        "ea06a560e32a16b579823d9e7de36a038cf08908",
-        "importnb==0.6.2",
-        "matplotlib==3.4.2",
-        "mlflow==1.18"
-    ],
-    license='Apache License 2.0',
+    install_requires=required,
+    license='GNU General Public License v3 (GPLv3)',
     python_requires='==3.9.*',
     classifiers=[
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',

@@ -1,7 +1,10 @@
+build/
+dist/
 .idea/
 .ipynb_checkpoints/
 arguseyes.egg-info/
 playing*.ipynb
+playing*.py
 venv/
 *.swp
 *.py[co]
