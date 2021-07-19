@@ -10,4 +10,5 @@ venv/
 *.swp
 *.py[co]
 mlflow-tracking
+mlruns
 

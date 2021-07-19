@@ -58,7 +58,7 @@ pipeline = Pipeline(steps=[
     ('model', KerasClassifier(create_cnn))
 ])
 
-train, test = train_test_split(images_of_interest, test_size=0.2)
+train, test = train_test_split(images_of_interest, test_size=0.2, random_state=1337)
 
 y_train = label_binarize(train['category_name'], classes=categories_to_distinguish)
 y_test = label_binarize(test['category_name'], classes=categories_to_distinguish)

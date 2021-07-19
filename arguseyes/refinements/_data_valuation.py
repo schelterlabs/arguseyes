@@ -53,11 +53,6 @@ class DataValuation(Refinement):
         X_test_sampled = X_test[:self.num_test_samples, :]
         y_test_sampled = y_test[:self.num_test_samples, :]
 
-        print("X_train", X_train.shape, X_train.dtype)
-        print("y_train", y_train.shape, y_train.dtype)
-        print("X_test", X_test_sampled.shape, X_test_sampled.dtype)
-        print("y_test", y_test_sampled.shape, y_test_sampled.dtype)
-
         shapley_values = _compute_shapley_values(X_train,
                                                  np.squeeze(y_train),
                                                  X_test_sampled,
@@ -82,9 +77,6 @@ class DataValuation(Refinement):
             data.apply(lambda row: self._add_shapley(row, shapley_values_by_row_id), axis=1)
 
         return Source(fact_table_source.operator_id, fact_table_source.source_type, data)
-
-#    @staticmethod
-
 
     @staticmethod
     def _add_shapley(row, shapley_values_by_row_id):
