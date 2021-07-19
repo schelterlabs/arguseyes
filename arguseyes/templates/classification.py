@@ -28,6 +28,8 @@ class ClassificationPipeline:
 
         mlflow.start_run()
 
+        self._log_mlinspect_results()
+
         m, n = X_train.shape
 
         mlflow.log_param("arguseyes.X_train.num_rows", m)
@@ -37,6 +39,11 @@ class ClassificationPipeline:
         save_fig_to_path(result.dag, dag_filename)
         dag_image = Image.open(dag_filename).convert("RGB")
         mlflow.log_image(dag_image, 'arguseyes.dag.png')
+
+    def _log_mlinspect_results(self):
+        # TODO @Shubha this is where we should serialise the DAG to json and log it as a tag to mlflow
+        # TODO @Shubha this is also where should log the intermediate results from the lineage inspection as artifacts
+        pass
 
     def __enter__(self):
         return self
