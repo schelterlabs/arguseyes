@@ -10,6 +10,10 @@ class ConstantFeatures(IssueDetector):
         unique_values = np.unique(column)
         return len(unique_values) == 1
 
+    def error_msg(self, issue) -> str:
+        num_constant_features = len(issue.details['constant_feature_indices'])
+        return f'Encountered {num_constant_features} constant feature(s)!'
+
     def _detect(self, pipeline) -> Issue:
 
         X_train = pipeline.X_train

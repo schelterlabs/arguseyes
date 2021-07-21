@@ -2,6 +2,8 @@ import os
 import mlflow
 from PIL import Image
 import json
+import tempfile
+from contextlib import redirect_stdout
 
 from mlinspect import PipelineInspector
 from mlinspect.inspections import RowLineage
@@ -26,8 +28,6 @@ class ClassificationPipeline:
         self.X_test = X_test
         self.y_train = y_train
         self.y_test = y_test
-
-        mlflow.start_run()
 
         self._log_mlinspect_results()
 
@@ -83,28 +83,30 @@ class ClassificationPipeline:
                                       X_train, X_test, y_train, y_test)
 
     @staticmethod
-    def from_py_file(path_to_py_file):
-        lineage_inspection = RowLineage(RowLineage.ALL_ROWS, [OperatorType.DATA_SOURCE, OperatorType.CONCATENATION,
-                                                              OperatorType.TRAIN_DATA, OperatorType.TRAIN_LABELS,
-                                                              OperatorType.TEST_DATA,  OperatorType.TEST_LABELS,
-                                                              OperatorType.SCORE, OperatorType.JOIN])
-        result = PipelineInspector \
-            .on_pipeline_from_py_file(path_to_py_file) \
-            .add_required_inspection(lineage_inspection) \
-            .execute()
+    def _execute_pipeline(inspector: PipelineInspector):
+        lineage_inspection = RowLineage(RowLineage.ALL_ROWS, [OperatorType.DATA_SOURCE, OperatorType.TRAIN_DATA,
+                                                              OperatorType.TRAIN_LABELS, OperatorType.TEST_DATA,
+                                                              OperatorType.TEST_LABELS, OperatorType.SCORE,
+                                                              OperatorType.JOIN])
+        mlflow.start_run()
+
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            with open(os.path.join(tmpdirname, 'pipeline-output.txt'), 'w') as tmpfile:
+                with redirect_stdout(tmpfile):
+                    result = inspector \
+                        .add_required_inspection(lineage_inspection) \
+                        .execute()
+                    mlflow.log_artifact(tmpfile.name)
 
         return ClassificationPipeline._from_result(result, lineage_inspection)
 
+    @staticmethod
+    def from_py_file(path_to_py_file):
+        return ClassificationPipeline._execute_pipeline(PipelineInspector.on_pipeline_from_py_file(path_to_py_file))
 
     @staticmethod
     def from_notebook(path_to_ipynb_file):
-        lineage_inspection = RowLineage(RowLineage.ALL_ROWS, [OperatorType.DATA_SOURCE, OperatorType.CONCATENATION,
-                                                              OperatorType.TRAIN_DATA, OperatorType.TRAIN_LABELS,
-                                                              OperatorType.TEST_DATA,  OperatorType.TEST_LABELS,
-                                                              OperatorType.SCORE, OperatorType.JOIN])
-        result = PipelineInspector \
-            .on_pipeline_from_ipynb_file(path_to_ipynb_file) \
-            .add_required_inspection(lineage_inspection) \
-            .execute()
-
-        return ClassificationPipeline._from_result(result, lineage_inspection)
+        return ClassificationPipeline._execute_pipeline(
+            PipelineInspector.on_pipeline_from_ipynb_file(path_to_ipynb_file))

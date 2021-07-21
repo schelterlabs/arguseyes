@@ -5,6 +5,13 @@ from arguseyes.issues._issue import IssueDetector, Issue
 
 class UnnormalisedFeatures(IssueDetector):
 
+    def error_msg(self, issue) -> str:
+        num_non_zero_mean = len(issue.details['non_zero_mean_features'])
+        num_non_unit_variance = len(issue.details['non_unit_variance_features'])
+
+        return f'Found {num_non_zero_mean} non-binary features without zero mean and' + \
+               f' {num_non_unit_variance} non-binary features without unit variance'
+
     def _detect(self, pipeline) -> Issue:
         X_train = pipeline.X_train
         _, num_columns = X_train.shape

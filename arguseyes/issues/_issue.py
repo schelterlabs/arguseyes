@@ -15,3 +15,6 @@ class IssueDetector(ABC):
     def _detect(self, pipeline) -> Issue:
         raise NotImplementedError
 
+    def error_msg(self, issue) -> str:
+        return f'Found {issue.id}'
+

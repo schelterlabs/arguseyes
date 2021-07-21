@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import yaml
+import logging
+import mlflow
+
+from arguseyes import ArgusEyes
+from arguseyes.issues import *
+
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+
+if len(sys.argv) != 2:
+    logging.error(f'Usage: {sys.argv[0]} [path-to-yaml-config-file]')
+    sys.exit(-1)
+
+yaml_file = sys.argv[1]
+
+logging.info(f'Reading configuration from {yaml_file}...')
+with open(yaml_file, 'r') as stream:
+    config = yaml.safe_load(stream)
+
+# TODO sanity checking of yaml contents
+# TODO we should have constants for all the string keys here
+
+pipeline_config = config['pipeline']
+issues_to_detect = pipeline_config['detect_issues']
+
+working_directory = pipeline_config['working_directory']
+logging.info(f'Changing to directory {working_directory}...')
+os.chdir(working_directory)
+
+series = config['series']
+mlflow_artifact_storage_uri = config['artifact_storage_uri']
+pipeline_path = pipeline_config['path']
+
+issues_by_name = {
+    'constant_features': ConstantFeatures(),
+    'unnormalised_features': UnnormalisedFeatures(),
+    'label_shift': LabelShift(),
+    'covariate_shift': CovariateShift(),
+    'traintest_overlap': TrainTestOverlap()
+}
+
+logging.info(f'Storing artifacts via mlflow at {mlflow_artifact_storage_uri}...')
+logging.info(f'Executing pipeline {pipeline_path} for the series {series}')
+eyes = ArgusEyes(series, mlflow_artifact_storage_uri)
+
+with eyes.classification_pipeline_from_py_file(pipeline_path) as pipeline:
+    logging.info(f'Created run {mlflow.active_run().info.run_id} for this invocation')
+
+    for issue_name, issue_detector in issues_by_name.items():
+        if issue_name in issues_to_detect:
+            logging.info(f'Looking for issue {issue_name}...')
+            issue = pipeline.detect_issue(issue_detector)
+            if not issue.is_present:
+                logging.info('Not found.')
+            else:
+                logging.warning(issue_detector.error_msg(issue))

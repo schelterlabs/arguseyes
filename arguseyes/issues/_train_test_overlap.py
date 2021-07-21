@@ -25,5 +25,5 @@ class TrainTestOverlap(IssueDetector):
         num_overlapping_records = len(overlap_lineage)
         has_overlap = num_overlapping_records > 0
 
-        # TODO output tuple ids in the future
+        # TODO maybe output tuple ids in the future
         return Issue('traintest_overlap', has_overlap, {'num_overlapping_records': num_overlapping_records})

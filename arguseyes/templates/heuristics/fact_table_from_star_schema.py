@@ -1,5 +1,6 @@
 from mlinspect.inspections._inspection_input import OperatorType
 
+
 def _sources_with_one_to_one_correspondence_to_feature_vectors(feature_matrix_lineage_per_row):
     rows_from_operator = {}
     operators_with_duplicates = set()
@@ -19,6 +20,7 @@ def _sources_with_one_to_one_correspondence_to_feature_vectors(feature_matrix_li
     return set(rows_from_operator.keys()).difference(operators_with_duplicates)
 
 
+# TODO Rewrite this not use the join outputs but only the DAG, to avoid materialisations
 def _sources_with_max_join_usage(result, lineage_inspection):
     joins = [node for node in result.dag_node_to_inspection_results.keys()
              if node.operator_info.operator == OperatorType.JOIN]
