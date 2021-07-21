@@ -4,6 +4,7 @@ from PIL import Image
 import json
 import tempfile
 from contextlib import redirect_stdout
+from networkx.readwrite.gpickle import read_gpickle, write_gpickle
 
 from mlinspect import PipelineInspector
 from mlinspect.inspections import RowLineage
@@ -45,9 +46,13 @@ class ClassificationPipeline:
             mlflow.log_image(dag_image, 'arguseyes-dag.png')
 
     def _log_mlinspect_results(self):
-        # TODO @Shubha this is where we should serialise the DAG to json and log it as a tag to mlflow
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            dag_filename = os.path.join(tmpdirname, 'arguseyes-dag.gpickle')
+            write_gpickle(self.result.dag, dag_filename)
+            mlflow.log_artifact(dag_filename)
+
         # TODO @Shubha this is also where should log the intermediate results from the lineage inspection as artifacts
-        pass
+        # mlflow.log_artifact(f'')
 
     def __enter__(self):
         return self
@@ -118,3 +123,8 @@ class ClassificationPipeline:
     def from_notebook(path_to_ipynb_file):
         return ClassificationPipeline._execute_pipeline(
             PipelineInspector.on_pipeline_from_ipynb_file(path_to_ipynb_file))
+
+    @staticmethod
+    def from_storage(mlflow_run_id):
+        # Retrieve pickled DAG (as networkx.DiGraph) with read_gpickle
+        raise NotImplemented
