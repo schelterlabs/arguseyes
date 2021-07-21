@@ -26,6 +26,7 @@ class FairnessMetrics(Refinement):
         # Compute group membership per tuple in the test source data
         is_in_non_protected_by_row_id = self._group_membership_in_test_source(fact_table_source)
 
+        # TODO this should be globally available for the pipline
         # Extract prediction vector for test set
         score_op = find_dag_node_by_type(OperatorType.SCORE, result.dag_node_to_inspection_results)
         predictions_with_lineage = result.dag_node_to_inspection_results[score_op][lineage_inspection]
@@ -73,16 +74,29 @@ class FairnessMetrics(Refinement):
                             else:
                                 protected_true_negatives += 1
 
-        # Print false negatives rates (as example)
+        identifier_non_protected = f'arguseyes.fairness.{self.sensitive_attribute}.{self.non_protected_class.lower()}'
+        identifier_protected = f'arguseyes.fairness.{self.sensitive_attribute}.not.{self.non_protected_class.lower()}'
+
+        self.log_metric(f'{identifier_non_protected}.true_positives', non_protected_true_positives)
+        self.log_metric(f'{identifier_non_protected}.false_negatives', non_protected_false_negatives)
+        self.log_metric(f'{identifier_non_protected}.false_positives', non_protected_false_positives)
+        self.log_metric(f'{identifier_non_protected}.true_negatives', non_protected_true_negatives)
+
+        self.log_metric(f'{identifier_protected}.true_positives', protected_true_positives)
+        self.log_metric(f'{identifier_protected}.false_negatives', protected_false_negatives)
+        self.log_metric(f'{identifier_protected}.false_positives', protected_false_positives)
+        self.log_metric(f'{identifier_protected}.true_negatives', protected_true_negatives)
+
+        # False negative rates (as example)
         non_protected_fnr = float(non_protected_false_negatives) / \
                             (float(non_protected_false_negatives) + float(non_protected_true_positives))
         protected_fnr = float(protected_false_negatives) / \
                         (float(protected_false_negatives) + float(protected_true_positives))
 
-        print(f'FNR ({self.sensitive_attribute}={self.non_protected_class}): {non_protected_fnr}, ' +
-              f'FNR ({self.sensitive_attribute}!={self.non_protected_class}): {protected_fnr}')
+        self.log_metric(f'{identifier_non_protected}.false_negative_rate', non_protected_fnr)
+        self.log_metric(f'{identifier_protected}.false_negative_rate', protected_fnr)
 
-    # TODO return confusion matrices or grouped truth/prediction vectors so that we can rely on sklearn metrics
+        # TODO compute more metrics
 
     def _group_membership_in_test_source(self, fact_table_source):
         is_in_non_protected_by_row_id = {}

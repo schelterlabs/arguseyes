@@ -8,6 +8,7 @@ import mlflow
 
 from arguseyes import ArgusEyes
 from arguseyes.issues import *
+from arguseyes.refinements import *
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
@@ -47,6 +48,7 @@ logging.info(f'Storing artifacts via mlflow at {mlflow_artifact_storage_uri}...'
 logging.info(f'Executing pipeline {pipeline_path} for the series {series}')
 eyes = ArgusEyes(series, mlflow_artifact_storage_uri)
 
+
 with eyes.classification_pipeline_from_py_file(pipeline_path) as pipeline:
     logging.info(f'Created run {mlflow.active_run().info.run_id} for this invocation')
 
@@ -58,3 +60,19 @@ with eyes.classification_pipeline_from_py_file(pipeline_path) as pipeline:
                 logging.info('Not found.')
             else:
                 logging.warning(issue_detector.error_msg(issue))
+
+    if 'data-refinements' in pipeline_config:
+        for refinement in pipeline_config['data-refinements']:
+            refinement_info = refinement['refinement']
+            if refinement_info['name'] == 'input_usage':
+                logging.info('Computing usage information for input records')
+                pipeline.compute(InputUsage())
+            if refinement_info['name'] == 'data_valuation':
+                logging.info('Computing data valuation information for input records')
+                pipeline.compute(DataValuation())
+            if refinement_info['name'] == 'fairness_metrics':
+                sensitive_attribute = refinement_info['params']['sensitive_attribute']
+                non_protected_class = refinement_info['params']['non_protected_class']
+                logging.info(f'Computing fairness metrics with {sensitive_attribute} as sensitive attribute' +
+                             f' and {non_protected_class} as non-protected class')
+                pipeline.compute(FairnessMetrics(sensitive_attribute, non_protected_class))
