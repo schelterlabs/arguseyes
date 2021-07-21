@@ -7,6 +7,7 @@ from mlinspect import PipelineInspector
 from mlinspect.inspections import RowLineage
 from mlinspect.utils import get_project_root
 from mlinspect.visualisation import save_fig_to_path
+from mlinspect.inspections._inspection_input import OperatorType
 
 from arguseyes.issues._issue import IssueDetector
 from arguseyes.refinements._refinement import Refinement
@@ -83,10 +84,10 @@ class ClassificationPipeline:
 
     @staticmethod
     def from_py_file(path_to_py_file):
-        # TODO we need to get rid of this
-        num_records = 1000000
-        lineage_inspection = RowLineage(num_records)
-
+        lineage_inspection = RowLineage(RowLineage.ALL_ROWS, [OperatorType.DATA_SOURCE, OperatorType.CONCATENATION,
+                                                              OperatorType.TRAIN_DATA, OperatorType.TRAIN_LABELS,
+                                                              OperatorType.TEST_DATA,  OperatorType.TEST_LABELS,
+                                                              OperatorType.SCORE, OperatorType.JOIN])
         result = PipelineInspector \
             .on_pipeline_from_py_file(path_to_py_file) \
             .add_required_inspection(lineage_inspection) \
@@ -96,11 +97,11 @@ class ClassificationPipeline:
 
 
     @staticmethod
-    def from_notebook(path_to_ipynb_file, run_id):
-        # TODO we need to get rid of this
-        num_records = 100000
-        lineage_inspection = RowLineage(num_records)
-
+    def from_notebook(path_to_ipynb_file):
+        lineage_inspection = RowLineage(RowLineage.ALL_ROWS, [OperatorType.DATA_SOURCE, OperatorType.CONCATENATION,
+                                                              OperatorType.TRAIN_DATA, OperatorType.TRAIN_LABELS,
+                                                              OperatorType.TEST_DATA,  OperatorType.TEST_LABELS,
+                                                              OperatorType.SCORE, OperatorType.JOIN])
         result = PipelineInspector \
             .on_pipeline_from_ipynb_file(path_to_ipynb_file) \
             .add_required_inspection(lineage_inspection) \
