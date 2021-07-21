@@ -1,6 +1,3 @@
-"""
-For 'python setup.py develop' and 'python setup.py test'
-"""
 import os
 from setuptools import setup, find_packages
 
@@ -13,12 +10,12 @@ setup(
     name="arguseyes",
     version="0.0.1.dev0",
     author='Sebastian Schelter',
-    author_email='s.schelter@uva.nl',
+    author_email='s[DOT]schelter[AT]uva[DOT]nl',
     long_description_content_type="text/markdown",
     packages=find_packages(),
     include_package_data=True,
     install_requires=required,
-    scripts=['bin/eyes'],
+    scripts=['eyes'],
     license='GNU General Public License v3 (GPLv3)',
     python_requires='==3.9.*',
     classifiers=[

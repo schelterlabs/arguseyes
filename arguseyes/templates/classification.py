@@ -7,7 +7,6 @@ from contextlib import redirect_stdout
 
 from mlinspect import PipelineInspector
 from mlinspect.inspections import RowLineage
-from mlinspect.utils import get_project_root
 from mlinspect.visualisation import save_fig_to_path
 from mlinspect.inspections._inspection_input import OperatorType
 
@@ -30,16 +29,20 @@ class ClassificationPipeline:
         self.y_test = y_test
 
         self._log_mlinspect_results()
+        self._log_pipeline_details()
 
-        m, n = X_train.shape
+    def _log_pipeline_details(self):
 
-        mlflow.log_param("arguseyes.X_train.num_rows", m)
-        mlflow.log_param("arguseyes.X_train.num_features", n)
+        mlflow.log_param("arguseyes.X_train.num_rows", self.X_train.shape[0])
+        mlflow.log_param("arguseyes.X_train.num_features", self.X_train.shape[1])
+        mlflow.log_param("arguseyes.X_test.num_rows", self.X_test.shape[0])
+        mlflow.log_param("arguseyes.X_test.num_features", self.X_test.shape[1])
 
-        dag_filename = os.path.join(str(get_project_root()), 'mlinspect-dag.png')
-        save_fig_to_path(result.dag, dag_filename)
-        dag_image = Image.open(dag_filename).convert("RGB")
-        mlflow.log_image(dag_image, 'arguseyes.dag.png')
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            dag_filename = os.path.join(tmpdirname, 'arguseyes-dag.png')
+            save_fig_to_path(self.result.dag, dag_filename)
+            dag_image = Image.open(dag_filename).convert("RGB")
+            mlflow.log_image(dag_image, 'arguseyes-dag.png')
 
     def _log_mlinspect_results(self):
         # TODO @Shubha this is where we should serialise the DAG to json and log it as a tag to mlflow
@@ -93,7 +96,7 @@ class ClassificationPipeline:
         os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with open(os.path.join(tmpdirname, 'pipeline-output.txt'), 'w') as tmpfile:
+            with open(os.path.join(tmpdirname, 'arguseyes-pipeline-output.txt'), 'w') as tmpfile:
                 with redirect_stdout(tmpfile):
                     result = inspector \
                         .add_required_inspection(lineage_inspection) \
