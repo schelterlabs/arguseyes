@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import sys
 
 from tensorflow.python.keras.wrappers.scikit_learn import KerasClassifier
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Dropout, Flatten
@@ -13,7 +14,7 @@ from sklearn.pipeline import Pipeline
 def decode_image(img_str):
     return np.array([int(val) for val in img_str.split(':')])
 
-
+# TODO change this to pyarrow + parquet, which can handle numpy arrays well
 train_data = pd.read_csv(f'datasets/sneakers/product_images.csv', converters={'image': decode_image})
 
 product_categories = pd.read_csv('datasets/sneakers/product_categories.csv')
@@ -58,7 +59,11 @@ pipeline = Pipeline(steps=[
     ('model', KerasClassifier(create_cnn))
 ])
 
-train, test = train_test_split(images_of_interest, test_size=0.2, random_state=1337)
+random_seed_for_splitting = 1337
+if len(sys.argv) > 1:
+    random_seed_for_splitting = int(sys.argv[1])
+
+train, test = train_test_split(images_of_interest, test_size=0.2, random_state=random_seed_for_splitting)
 
 y_train = label_binarize(train['category_name'], classes=categories_to_distinguish)
 y_test = label_binarize(test['category_name'], classes=categories_to_distinguish)

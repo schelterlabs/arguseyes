@@ -74,8 +74,15 @@ with eyes.classification_pipeline_from_py_file(pipeline_path, cmd_args=synthetic
                 logging.info('Computing usage information for input records')
                 pipeline.compute(InputUsage())
             if refinement_info['name'] == 'data_valuation':
-                logging.info('Computing data valuation information for input records')
-                pipeline.compute(DataValuation())
+                if 'params' in refinement_info:
+                    k = refinement_info['params']['k']
+                    num_test_samples = refinement_info['params']['num_test_samples']
+                    logging.info(f'Computing data valuation information for input records with k={k}' +
+                                 f' and {num_test_samples} test samples')
+                    pipeline.compute(DataValuation(k, num_test_samples))
+                else:
+                    logging.info('Computing data valuation information for input records')
+                    pipeline.compute(DataValuation())
             if refinement_info['name'] == 'fairness_metrics':
                 sensitive_attribute = refinement_info['params']['sensitive_attribute']
                 non_protected_class = refinement_info['params']['non_protected_class']
