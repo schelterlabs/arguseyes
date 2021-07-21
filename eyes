@@ -32,6 +32,12 @@ working_directory = pipeline_config['working_directory']
 logging.info(f'Changing to directory {working_directory}...')
 os.chdir(working_directory)
 
+synthetic_cmd_args = []
+
+if 'args' in pipeline_config:
+    synthetic_cmd_args = pipeline_config['args']
+    logging.info(f"Synthetic commandline arguments specified: {synthetic_cmd_args}")
+
 series = config['series']
 mlflow_artifact_storage_uri = config['artifact_storage_uri']
 pipeline_path = pipeline_config['path']
@@ -49,11 +55,11 @@ logging.info(f'Executing pipeline {pipeline_path} for the series {series}')
 eyes = ArgusEyes(series, mlflow_artifact_storage_uri)
 
 
-with eyes.classification_pipeline_from_py_file(pipeline_path) as pipeline:
+with eyes.classification_pipeline_from_py_file(pipeline_path, cmd_args=synthetic_cmd_args) as pipeline:
     logging.info(f'Created run {mlflow.active_run().info.run_id} for this invocation')
 
     for issue_name, issue_detector in issues_by_name.items():
-        if issue_name in issues_to_detect:
+        if issues_to_detect is not None and issue_name in issues_to_detect:
             logging.info(f'Looking for issue {issue_name}...')
             issue = pipeline.detect_issue(issue_detector)
             if not issue.is_present:

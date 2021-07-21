@@ -36,11 +36,15 @@ class InputUsage(Refinement):
 
         refined_sources = []
 
-        for source in pipeline.train_sources:
+        for index, source in enumerate(pipeline.train_sources):
             data = source.data
             data['__arguseyes__is_used'] = data.apply(lambda row: self._is_used(row, lineage_by_source), axis=1)
 
             refined_source = Source(source.operator_id, source.source_type, data)
+
+            self.log_tag(f'arguseyes.input_usage.source.{index}.operator_id', source.operator_id)
+            self.log_tag(f'arguseyes.input_usage.source.{index}.source_type', source.source_type)
+            self.log_as_parquet_file(data, f'input-{index}-with-usage.parquet')
 
             refined_sources.append(refined_source)
 

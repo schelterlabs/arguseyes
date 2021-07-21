@@ -9,5 +9,5 @@ class ArgusEyes:
         self.mlflow.set_tracking_uri(artifact_storage_uri)
         self.mlflow.set_experiment(series_id)
 
-    def classification_pipeline_from_py_file(self, pyfile):
-        return ClassificationPipeline.from_py_file(pyfile)
+    def classification_pipeline_from_py_file(self, pyfile, cmd_args=[]):
+        return ClassificationPipeline.from_py_file(pyfile, cmd_args)

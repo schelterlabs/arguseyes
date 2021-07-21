@@ -1,3 +1,4 @@
+import sys
 import pandas as pd
 import numpy as np
 
@@ -10,6 +11,8 @@ from sklearn.pipeline import Pipeline
 from tensorflow.python.keras.wrappers.scikit_learn import KerasClassifier
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.models import Sequential
+
+print("ARGS", sys.argv)
 
 
 def load_data(target_categories, start_date, verified_only):
@@ -94,8 +97,14 @@ def create_mlp():
 target_categories = ['Digital_Video_Games']
 split_date = '2015-07-31'
 
-reviews = load_data(['Digital_Video_Games'], '2015-01-01', verified_only=True)
-train_data, test_data, train_labels, test_labels = temporal_split(reviews, '2015-07-31')
+if len(sys.argv) > 1:
+    target_categories = [sys.argv[1]]
+
+if len(sys.argv) > 2:
+    split_date = sys.argv[2]
+
+reviews = load_data(target_categories, '2015-01-01', verified_only=True)
+train_data, test_data, train_labels, test_labels = temporal_split(reviews, split_date)
 
 feature_transformation = feature_encoding(
     numerical=['star_rating'],

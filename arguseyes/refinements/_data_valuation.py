@@ -77,6 +77,10 @@ class DataValuation(Refinement):
         data['__arguseyes__shapley_value'] = \
             data.apply(lambda row: self._add_shapley(row, shapley_values_by_row_id), axis=1)
 
+        self.log_tag('arguseyes.data_valuation.operator_id', fact_table_source.operator_id)
+        self.log_tag('arguseyes.data_valuation.data_file', 'input-with-shapley-values.parquet')
+        self.log_as_parquet_file(data, 'input-with-shapley-values.parquet')
+
         return Source(fact_table_source.operator_id, fact_table_source.source_type, data)
 
     @staticmethod

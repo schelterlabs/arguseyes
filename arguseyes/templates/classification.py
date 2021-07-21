@@ -106,8 +106,13 @@ class ClassificationPipeline:
         return ClassificationPipeline._from_result(result, lineage_inspection)
 
     @staticmethod
-    def from_py_file(path_to_py_file):
-        return ClassificationPipeline._execute_pipeline(PipelineInspector.on_pipeline_from_py_file(path_to_py_file))
+    def from_py_file(path_to_py_file, cmd_args=[]):
+        synthetic_cmd_args = ['eyes']
+        synthetic_cmd_args.extend(cmd_args)
+        from unittest.mock import patch
+        import sys
+        with patch.object(sys, 'argv', synthetic_cmd_args):
+            return ClassificationPipeline._execute_pipeline(PipelineInspector.on_pipeline_from_py_file(path_to_py_file))
 
     @staticmethod
     def from_notebook(path_to_ipynb_file):
