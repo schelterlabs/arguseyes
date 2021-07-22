@@ -22,8 +22,9 @@ from arguseyes.templates.extractors import source_extractor
 
 class ClassificationPipeline:
 
-    def __init__(self, result, train_sources, test_sources, X_train, X_test, y_train, y_test):
-        self.result = result
+    def __init__(self, dag, dag_node_to_lineage_df, train_sources, test_sources, X_train, X_test, y_train, y_test):
+        self.dag = dag
+        self.dag_node_to_lineage_df = dag_node_to_lineage_df
         self.train_sources = train_sources
         self.test_sources = test_sources
         self.X_train = X_train
@@ -43,37 +44,36 @@ class ClassificationPipeline:
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             dag_filename = os.path.join(tmpdirname, 'arguseyes-dag.png')
-            save_fig_to_path(self.result.dag, dag_filename)
+            save_fig_to_path(self.dag, dag_filename)
             dag_image = Image.open(dag_filename).convert("RGB")
             mlflow.log_image(dag_image, 'arguseyes-dag.png')
 
     def _log_mlinspect_results(self):
         with tempfile.TemporaryDirectory() as tmpdirname:
             dag_filename = os.path.join(tmpdirname, 'arguseyes-dag.gpickle')
-            write_gpickle(self.result.dag, dag_filename)
+            write_gpickle(self.dag, dag_filename)
             mlflow.log_artifact(dag_filename)
 
-        for node, result_dict in self.result.dag_node_to_inspection_results.items():
-            for orig_df in result_dict.values():
-                if orig_df is None:
-                    continue
-                filename = f'{node.node_id}.parquet'
-                with tempfile.TemporaryDirectory() as tmpdirname:
-                    temp_filename = os.path.join(tmpdirname, filename)
-                    # Currently, pyarrow cannot serialise sets
-                    lineage_column = orig_df['mlinspect_lineage'].map(
-                        lambda s: [
-                            {
-                                'operator_id': lid.operator_id,
-                                'row_id': lid.row_id,
-                            } for lid in s
-                        ]
-                    )
-                    mod_df = orig_df.drop(columns=['mlinspect_lineage'])
-                    mod_df['mlinspect_lineage'] = lineage_column
-                    table = pa.Table.from_pandas(mod_df, preserve_index=True)
-                    pq.write_table(table, temp_filename)
-                    mlflow.log_artifact(temp_filename)
+        for node, orig_df in self.dag_node_to_lineage_df.items():
+            if orig_df is None:
+                continue
+            filename = f'{node.node_id}.parquet'
+            with tempfile.TemporaryDirectory() as tmpdirname:
+                temp_filename = os.path.join(tmpdirname, filename)
+                # Currently, pyarrow cannot serialise sets
+                lineage_column = orig_df['mlinspect_lineage'].map(
+                    lambda s: [
+                        {
+                            'operator_id': lid.operator_id,
+                            'row_id': lid.row_id,
+                        } for lid in s
+                    ]
+                )
+                mod_df = orig_df.drop(columns=['mlinspect_lineage'])
+                mod_df['mlinspect_lineage'] = lineage_column
+                table = pa.Table.from_pandas(mod_df, preserve_index=True)
+                pq.write_table(table, temp_filename)
+                mlflow.log_artifact(temp_filename)
 
     def __enter__(self):
         return self
@@ -99,16 +99,23 @@ class ClassificationPipeline:
 
         # TODO persist with mlflow
 
-        train_sources = source_extractor.extract_train_sources(result)
-        test_sources = source_extractor.extract_test_sources(result)
+        dag_node_to_lineage_df = {
+            node: df
+            for node, lineage_map in result.dag_node_to_inspection_results.items()
+            for df in lineage_map.values()
+        }
 
-        X_train = feature_matrix_extractor.extract_train_feature_matrix(result)
-        X_test = feature_matrix_extractor.extract_test_feature_matrix(result)
+        train_sources = source_extractor.extract_train_sources(result.dag, dag_node_to_lineage_df)
+        test_sources = source_extractor.extract_test_sources(result.dag, dag_node_to_lineage_df)
 
-        y_train = feature_matrix_extractor.extract_train_labels(result)
-        y_test = feature_matrix_extractor.extract_test_labels(result)
+        X_train = feature_matrix_extractor.extract_train_feature_matrix(dag_node_to_lineage_df)
+        X_test = feature_matrix_extractor.extract_test_feature_matrix(dag_node_to_lineage_df)
 
-        return ClassificationPipeline(result, train_sources, test_sources,
+        y_train = feature_matrix_extractor.extract_train_labels(dag_node_to_lineage_df)
+        y_test = feature_matrix_extractor.extract_test_labels(dag_node_to_lineage_df)
+
+        return ClassificationPipeline(result.dag, dag_node_to_lineage_df,
+                                      train_sources, test_sources,
                                       X_train, X_test, y_train, y_test)
 
     @staticmethod
@@ -147,5 +154,26 @@ class ClassificationPipeline:
 
     @staticmethod
     def from_storage(mlflow_run_id):
+        # TODO: Implement
+        pass
+
         # Retrieve pickled DAG (as networkx.DiGraph) with read_gpickle
-        raise NotImplemented
+        dag = None
+
+        # Map DagNode objects from unpickled DAG object above
+        # to DateFrames of lineage inspection results from Parquet files
+        # each file named with DagNode.node_id
+        dag_node_to_lineage_df = {}
+
+        train_sources = source_extractor.extract_train_sources(dag, dag_node_to_lineage_df)
+        test_sources = source_extractor.extract_test_sources(dag, dag_node_to_lineage_df)
+
+        X_train = feature_matrix_extractor.extract_train_feature_matrix(dag_node_to_lineage_df)
+        X_test = feature_matrix_extractor.extract_test_feature_matrix(dag_node_to_lineage_df)
+
+        y_train = feature_matrix_extractor.extract_train_labels(dag_node_to_lineage_df)
+        y_test = feature_matrix_extractor.extract_test_labels(dag_node_to_lineage_df)
+
+        return ClassificationPipeline(dag, dag_node_to_lineage_df,
+                                      train_sources, test_sources,
+                                      X_train, X_test, y_train, y_test)

@@ -3,23 +3,23 @@ from arguseyes.utils.dag_extraction import find_dag_node_by_type
 from arguseyes.utils.tensors import copy_to_matrix
 
 
-def extract_train_feature_matrix(result):
-    return _extract(OperatorType.TRAIN_DATA, result)
+def extract_train_feature_matrix(dag_node_to_lineage_df):
+    return _extract(OperatorType.TRAIN_DATA, dag_node_to_lineage_df)
 
 
-def extract_train_labels(result):
-    return _extract(OperatorType.TRAIN_LABELS, result)
+def extract_train_labels(dag_node_to_lineage_df):
+    return _extract(OperatorType.TRAIN_LABELS, dag_node_to_lineage_df)
 
 
-def extract_test_feature_matrix(result):
-    return _extract(OperatorType.TEST_DATA, result)
+def extract_test_feature_matrix(dag_node_to_lineage_df):
+    return _extract(OperatorType.TEST_DATA, dag_node_to_lineage_df)
 
 
-def extract_test_labels(result):
-    return _extract(OperatorType.TEST_LABELS, result)
+def extract_test_labels(dag_node_to_lineage_df):
+    return _extract(OperatorType.TEST_LABELS, dag_node_to_lineage_df)
 
 
-def _extract(operator_type, result):
-    data_op = find_dag_node_by_type(operator_type, result.dag_node_to_inspection_results)
-    return copy_to_matrix(tuple(result.dag_node_to_inspection_results[data_op])[1]['array'].values)
+def _extract(operator_type, dag_node_to_lineage_df):
+    data_op = find_dag_node_by_type(operator_type, dag_node_to_lineage_df.keys())
+    return copy_to_matrix(dag_node_to_lineage_df[data_op]['array'].values)
 

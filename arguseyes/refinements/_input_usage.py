@@ -17,11 +17,8 @@ class InputUsage(Refinement):
         return False
 
     def _compute(self, pipeline):
-
-        result = pipeline.result
-
-        train_data_op = find_dag_node_by_type(OperatorType.TRAIN_DATA, result.dag_node_to_inspection_results)
-        inspection_result = tuple(result.dag_node_to_inspection_results[train_data_op])[1]
+        train_data_op = find_dag_node_by_type(OperatorType.TRAIN_DATA, pipeline.dag_node_to_lineage_df.keys())
+        inspection_result = pipeline.dag_node_to_lineage_df[train_data_op]
         lineage_per_row = list(inspection_result['mlinspect_lineage'])
 
         lineage_by_source = {}

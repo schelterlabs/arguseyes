@@ -5,19 +5,19 @@ from arguseyes.utils.dag_extraction import find_dag_node_by_type, find_source_da
 from arguseyes.templates.heuristics.fact_table_from_star_schema import determine_fact_table_source_id
 
 
-def extract_train_sources(result):
-    return _extract_sources(OperatorType.TRAIN_DATA, result)
+def extract_train_sources(dag, dag_node_to_lineage_df):
+    return _extract_sources(OperatorType.TRAIN_DATA, dag, dag_node_to_lineage_df)
 
 
-def extract_test_sources(result):
-    return _extract_sources(OperatorType.TEST_DATA, result)
+def extract_test_sources(dag, dag_node_to_lineage_df):
+    return _extract_sources(OperatorType.TEST_DATA, dag, dag_node_to_lineage_df)
 
 
-def _extract_sources(operator_type, result):
-    data_op = find_dag_node_by_type(operator_type, result.dag_node_to_inspection_results)
-    raw_sources = find_source_datasets(data_op.node_id, result)
+def _extract_sources(operator_type, dag, dag_node_to_lineage_df):
+    data_op = find_dag_node_by_type(operator_type, dag_node_to_lineage_df.keys())
+    raw_sources = find_source_datasets(data_op.node_id, dag, dag_node_to_lineage_df)
 
-    fact_table_source_id = determine_fact_table_source_id(raw_sources, data_op, result)
+    fact_table_source_id = determine_fact_table_source_id(raw_sources, data_op, dag_node_to_lineage_df)
 
     sources = []
 

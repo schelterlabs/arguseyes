@@ -43,8 +43,6 @@ class DataValuation(Refinement):
         self.num_test_samples = num_test_samples
 
     def _compute(self, pipeline):
-        result = pipeline.result
-
         X_train = pipeline.X_train
         X_test = pipeline.X_test
         y_train = pipeline.y_train
@@ -58,8 +56,8 @@ class DataValuation(Refinement):
                                                  X_test_sampled,
                                                  np.squeeze(y_test_sampled), self.k)
 
-        train_data_op = find_dag_node_by_type(OperatorType.TRAIN_DATA, result.dag_node_to_inspection_results)
-        inspection_result = tuple(result.dag_node_to_inspection_results[train_data_op])[1]
+        train_data_op = find_dag_node_by_type(OperatorType.TRAIN_DATA, pipeline.dag_node_to_lineage_df.keys())
+        inspection_result = pipeline.dag_node_to_lineage_df[train_data_op]
         lineage_per_row = list(inspection_result['mlinspect_lineage'])
 
         fact_table_source = [train_source for train_source in pipeline.train_sources
