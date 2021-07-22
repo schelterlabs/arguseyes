@@ -21,14 +21,14 @@ def _sources_with_one_to_one_correspondence_to_feature_vectors(feature_matrix_li
 
 
 # TODO Rewrite this not use the join outputs but only the DAG, to avoid materialisations
-def _sources_with_max_join_usage(result):
-    joins = [node for node in result.dag_node_to_inspection_results.keys()
+def _sources_with_max_join_usage(dag_node_to_lineage_df):
+    joins = [node for node in dag_node_to_lineage_df.keys()
              if node.operator_info.operator == OperatorType.JOIN]
 
     source_join_usage_counts = {}
 
     for join in joins:
-        join_output_with_lineage = tuple(result.dag_node_to_inspection_results[join])[1]
+        join_output_with_lineage = dag_node_to_lineage_df[join]
         lineage_per_row = list(join_output_with_lineage['mlinspect_lineage'])
 
         source_ids = set()
@@ -58,10 +58,10 @@ def _sources_with_max_cardinality(raw_sources):
 
 
 # TODO handle errors
-def determine_fact_table_source_id(raw_sources, data_op, result):
+def determine_fact_table_source_id(raw_sources, data_op, dag_node_to_lineage_df):
     # Heuristic 1: Fact table should have 1:1 correspondence between input tuples and features
     # TODO this is not the case for fork-pipelines!
-    feature_matrix_lineage = tuple(result.dag_node_to_inspection_results[data_op])[1]
+    feature_matrix_lineage = dag_node_to_lineage_df[data_op]
     feature_matrix_lineage_per_row = list(feature_matrix_lineage['mlinspect_lineage'])
     sources_one_to_one = _sources_with_one_to_one_correspondence_to_feature_vectors(feature_matrix_lineage_per_row)
 
@@ -69,7 +69,7 @@ def determine_fact_table_source_id(raw_sources, data_op, result):
         return list(sources_one_to_one)[0]
     else:
         # Heuristic 2: Fact table is most often used in joins
-        sources_max_usage = _sources_with_max_join_usage(result)
+        sources_max_usage = _sources_with_max_join_usage(dag_node_to_lineage_df)
         remaining_sources = sources_one_to_one & sources_max_usage
 
         if len(remaining_sources) == 1:

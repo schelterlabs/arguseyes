@@ -17,8 +17,6 @@ class FairnessMetrics(Refinement):
     # TODO this assumes binary classification and currently only works attributes of the FACT table
     # TODO this needs some refactoring
     def _compute(self, pipeline):
-        result = pipeline.result
-
         fact_table_source = [test_source for test_source in pipeline.test_sources
                              if test_source.source_type == SourceType.FACTS][0]
 
@@ -27,8 +25,8 @@ class FairnessMetrics(Refinement):
 
         # TODO this should be globally available for the pipline
         # Extract prediction vector for test set
-        score_op = find_dag_node_by_type(OperatorType.SCORE, result.dag_node_to_inspection_results)
-        predictions_with_lineage = tuple(result.dag_node_to_inspection_results[score_op])[1]
+        score_op = find_dag_node_by_type(OperatorType.SCORE, pipeline.dag_node_to_lineage_df.keys())
+        predictions_with_lineage = pipeline.dag_node_to_lineage_df[score_op]
 
         y_pred = np.array(predictions_with_lineage['array']).reshape(-1, 1)
 
