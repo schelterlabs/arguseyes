@@ -11,4 +11,5 @@ venv/
 *.py[co]
 mlflow-tracking
 mlruns
+notebooks
 
