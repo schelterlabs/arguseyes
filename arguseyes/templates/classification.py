@@ -57,7 +57,7 @@ class ClassificationPipeline:
         for node, orig_df in self.dag_node_to_lineage_df.items():
             if orig_df is None:
                 continue
-            filename = f'{node.node_id}.parquet'
+            filename = f'arguseyes-dagnode-{node.node_id}-lineage-df.parquet'
             with tempfile.TemporaryDirectory() as tmpdirname:
                 temp_filename = os.path.join(tmpdirname, filename)
                 # Currently, pyarrow cannot serialise sets
