@@ -6,6 +6,9 @@ import tempfile
 from contextlib import redirect_stdout
 from networkx.readwrite.gpickle import read_gpickle, write_gpickle
 
+import pyarrow as pa
+import pyarrow.parquet as pq
+
 from mlinspect import PipelineInspector
 from mlinspect.inspections import RowLineage
 from mlinspect.visualisation import save_fig_to_path
@@ -21,7 +24,7 @@ class ClassificationPipeline:
 
     def __init__(self, result, lineage_inspection, train_sources, test_sources, X_train, X_test, y_train, y_test):
         self.result = result
-        self.lineage_inspection = lineage_inspection
+        self.lineage_inspection = lineage_inspection  # TODO: Remove
         self.train_sources = train_sources
         self.test_sources = test_sources
         self.X_train = X_train
@@ -51,8 +54,27 @@ class ClassificationPipeline:
             write_gpickle(self.result.dag, dag_filename)
             mlflow.log_artifact(dag_filename)
 
-        # TODO @Shubha this is also where should log the intermediate results from the lineage inspection as artifacts
-        # mlflow.log_artifact(f'')
+        for node, result_dict in self.result.dag_node_to_inspection_results.items():
+            for orig_df in result_dict.values():
+                if orig_df is None:
+                    continue
+                filename = f'{node.node_id}.parquet'
+                with tempfile.TemporaryDirectory() as tmpdirname:
+                    temp_filename = os.path.join(tmpdirname, filename)
+                    # Currently, pyarrow cannot serialise sets
+                    lineage_column = orig_df['mlinspect_lineage'].map(
+                        lambda s: [
+                            {
+                                'operator_id': lid.operator_id,
+                                'row_id': lid.row_id,
+                            } for lid in s
+                        ]
+                    )
+                    mod_df = orig_df.drop(columns=['mlinspect_lineage'])
+                    mod_df['mlinspect_lineage'] = lineage_column
+                    table = pa.Table.from_pandas(mod_df, preserve_index=True)
+                    pq.write_table(table, temp_filename)
+                    mlflow.log_artifact(temp_filename)
 
     def __enter__(self):
         return self
