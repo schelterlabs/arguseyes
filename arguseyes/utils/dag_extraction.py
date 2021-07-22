@@ -10,7 +10,7 @@ def find_dag_node_by_type(op_type, dag_node_to_inspection_results):
     raise ValueError('Unable to find DAG node')
 
 
-def find_source_datasets(start_node_id, result, lineage_inspection):
+def find_source_datasets(start_node_id, result):
     nodes_to_search = []
     nodes_processed = set()
 
@@ -25,7 +25,7 @@ def find_source_datasets(start_node_id, result, lineage_inspection):
                 if source.node_id not in nodes_processed and source.node_id not in nodes_to_search:
                     nodes_to_search.append(source.node_id)
                     if source.operator_info.operator == OperatorType.DATA_SOURCE:
-                        data = result.dag_node_to_inspection_results[source][lineage_inspection]
+                        data = tuple(result.dag_node_to_inspection_results[source])[1]
                         source_datasets[source.node_id] = data
         nodes_processed.add(current_node_id)
 
