@@ -9,14 +9,13 @@ class TrainTestOverlap(IssueDetector):
 
     def _detect(self, pipeline) -> Issue:
         result = pipeline.result
-        lineage_inspection = pipeline.lineage_inspection
 
         # TODO the lineage should be readily available
         train_data_op = find_dag_node_by_type(OperatorType.TRAIN_DATA, result.dag_node_to_inspection_results)
-        train_data_with_lineage = result.dag_node_to_inspection_results[train_data_op][lineage_inspection]
+        train_data_with_lineage = tuple(result.dag_node_to_inspection_results[train_data_op])[1]
 
         test_data_op = find_dag_node_by_type(OperatorType.TEST_DATA, result.dag_node_to_inspection_results)
-        test_data_with_lineage = result.dag_node_to_inspection_results[test_data_op][lineage_inspection]
+        test_data_with_lineage = tuple(result.dag_node_to_inspection_results[test_data_op])[1]
 
         train_lineage = frozenset([frozenset(lineage) for lineage in train_data_with_lineage['mlinspect_lineage']])
         test_lineage = frozenset([frozenset(lineage) for lineage in test_data_with_lineage['mlinspect_lineage']])

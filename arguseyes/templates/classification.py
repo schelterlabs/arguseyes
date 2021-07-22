@@ -22,9 +22,8 @@ from arguseyes.templates.extractors import source_extractor
 
 class ClassificationPipeline:
 
-    def __init__(self, result, lineage_inspection, train_sources, test_sources, X_train, X_test, y_train, y_test):
+    def __init__(self, result, train_sources, test_sources, X_train, X_test, y_train, y_test):
         self.result = result
-        self.lineage_inspection = lineage_inspection  # TODO: Remove
         self.train_sources = train_sources
         self.test_sources = test_sources
         self.X_train = X_train
@@ -96,20 +95,20 @@ class ClassificationPipeline:
         return refinement._compute(self)
 
     @staticmethod
-    def _from_result(result, lineage_inspection):
+    def _from_result(result):
 
         # TODO persist with mlflow
 
-        train_sources = source_extractor.extract_train_sources(result, lineage_inspection)
-        test_sources = source_extractor.extract_test_sources(result, lineage_inspection)
+        train_sources = source_extractor.extract_train_sources(result)
+        test_sources = source_extractor.extract_test_sources(result)
 
-        X_train = feature_matrix_extractor.extract_train_feature_matrix(result, lineage_inspection)
-        X_test = feature_matrix_extractor.extract_test_feature_matrix(result, lineage_inspection)
+        X_train = feature_matrix_extractor.extract_train_feature_matrix(result)
+        X_test = feature_matrix_extractor.extract_test_feature_matrix(result)
 
-        y_train = feature_matrix_extractor.extract_train_labels(result, lineage_inspection)
-        y_test = feature_matrix_extractor.extract_test_labels(result, lineage_inspection)
+        y_train = feature_matrix_extractor.extract_train_labels(result)
+        y_test = feature_matrix_extractor.extract_test_labels(result)
 
-        return ClassificationPipeline(result, lineage_inspection, train_sources, test_sources,
+        return ClassificationPipeline(result, train_sources, test_sources,
                                       X_train, X_test, y_train, y_test)
 
     @staticmethod
@@ -130,7 +129,7 @@ class ClassificationPipeline:
                         .execute()
                     mlflow.log_artifact(tmpfile.name)
 
-        return ClassificationPipeline._from_result(result, lineage_inspection)
+        return ClassificationPipeline._from_result(result)
 
     @staticmethod
     def from_py_file(path_to_py_file, cmd_args=[]):

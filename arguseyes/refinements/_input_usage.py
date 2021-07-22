@@ -19,10 +19,9 @@ class InputUsage(Refinement):
     def _compute(self, pipeline):
 
         result = pipeline.result
-        lineage_inspection = pipeline.lineage_inspection
 
         train_data_op = find_dag_node_by_type(OperatorType.TRAIN_DATA, result.dag_node_to_inspection_results)
-        inspection_result = result.dag_node_to_inspection_results[train_data_op][lineage_inspection]
+        inspection_result = tuple(result.dag_node_to_inspection_results[train_data_op])[1]
         lineage_per_row = list(inspection_result['mlinspect_lineage'])
 
         lineage_by_source = {}

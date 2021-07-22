@@ -18,7 +18,6 @@ class FairnessMetrics(Refinement):
     # TODO this needs some refactoring
     def _compute(self, pipeline):
         result = pipeline.result
-        lineage_inspection = pipeline.lineage_inspection
 
         fact_table_source = [test_source for test_source in pipeline.test_sources
                              if test_source.source_type == SourceType.FACTS][0]
@@ -29,7 +28,7 @@ class FairnessMetrics(Refinement):
         # TODO this should be globally available for the pipline
         # Extract prediction vector for test set
         score_op = find_dag_node_by_type(OperatorType.SCORE, result.dag_node_to_inspection_results)
-        predictions_with_lineage = result.dag_node_to_inspection_results[score_op][lineage_inspection]
+        predictions_with_lineage = tuple(result.dag_node_to_inspection_results[score_op])[1]
 
         y_pred = np.array(predictions_with_lineage['array']).reshape(-1, 1)
 

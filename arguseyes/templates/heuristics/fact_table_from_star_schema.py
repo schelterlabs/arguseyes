@@ -21,14 +21,14 @@ def _sources_with_one_to_one_correspondence_to_feature_vectors(feature_matrix_li
 
 
 # TODO Rewrite this not use the join outputs but only the DAG, to avoid materialisations
-def _sources_with_max_join_usage(result, lineage_inspection):
+def _sources_with_max_join_usage(result):
     joins = [node for node in result.dag_node_to_inspection_results.keys()
              if node.operator_info.operator == OperatorType.JOIN]
 
     source_join_usage_counts = {}
 
     for join in joins:
-        join_output_with_lineage = result.dag_node_to_inspection_results[join][lineage_inspection]
+        join_output_with_lineage = tuple(result.dag_node_to_inspection_results[join])[1]
         lineage_per_row = list(join_output_with_lineage['mlinspect_lineage'])
 
         source_ids = set()
@@ -58,10 +58,10 @@ def _sources_with_max_cardinality(raw_sources):
 
 
 # TODO handle errors
-def determine_fact_table_source_id(raw_sources, data_op, result, lineage_inspection):
+def determine_fact_table_source_id(raw_sources, data_op, result):
     # Heuristic 1: Fact table should have 1:1 correspondence between input tuples and features
     # TODO this is not the case for fork-pipelines!
-    feature_matrix_lineage = result.dag_node_to_inspection_results[data_op][lineage_inspection]
+    feature_matrix_lineage = tuple(result.dag_node_to_inspection_results[data_op])[1]
     feature_matrix_lineage_per_row = list(feature_matrix_lineage['mlinspect_lineage'])
     sources_one_to_one = _sources_with_one_to_one_correspondence_to_feature_vectors(feature_matrix_lineage_per_row)
 
@@ -69,7 +69,7 @@ def determine_fact_table_source_id(raw_sources, data_op, result, lineage_inspect
         return list(sources_one_to_one)[0]
     else:
         # Heuristic 2: Fact table is most often used in joins
-        sources_max_usage = _sources_with_max_join_usage(result, lineage_inspection)
+        sources_max_usage = _sources_with_max_join_usage(result)
         remaining_sources = sources_one_to_one & sources_max_usage
 
         if len(remaining_sources) == 1:
