@@ -1,16 +1,18 @@
 import os
 import mlflow
+from mlflow.tracking import MlflowClient
 from PIL import Image
 import json
 import tempfile
 from contextlib import redirect_stdout
 from networkx.readwrite.gpickle import read_gpickle, write_gpickle
+import pandas as pd
 
 import pyarrow as pa
 import pyarrow.parquet as pq
 
 from mlinspect import PipelineInspector
-from mlinspect.inspections import RowLineage
+from mlinspect.inspections._lineage import RowLineage, LineageId
 from mlinspect.visualisation import save_fig_to_path
 from mlinspect.inspections._inspection_input import OperatorType
 
@@ -153,17 +155,26 @@ class ClassificationPipeline:
             PipelineInspector.on_pipeline_from_ipynb_file(path_to_ipynb_file))
 
     @staticmethod
-    def from_storage(mlflow_run_id):
-        # TODO: Implement
-        pass
+    def from_storage(run_id, artifact_storage_uri):
+        run = MlflowClient(artifact_storage_uri).get_run(run_id)
 
         # Retrieve pickled DAG (as networkx.DiGraph) with read_gpickle
-        dag = None
+        dag_filename = os.path.join(run.info.artifact_uri, "arguseyes-dag.gpickle")
+        dag = read_gpickle(dag_filename)
 
         # Map DagNode objects from unpickled DAG object above
         # to DateFrames of lineage inspection results from Parquet files
         # each file named with DagNode.node_id
         dag_node_to_lineage_df = {}
+        for node in dag.nodes:
+            df_filename = os.path.join(
+                run.info.artifact_uri, f"arguseyes-dagnode-{node.node_id}-lineage-df.parquet")
+            if not os.path.exists(df_filename):
+                continue
+            df = pd.read_parquet(df_filename)
+            df['mlinspect_lineage'] = df['mlinspect_lineage'].map(
+                lambda l: set(LineageId(**item) for item in l))
+            dag_node_to_lineage_df[node] = df
 
         train_sources = source_extractor.extract_train_sources(dag, dag_node_to_lineage_df)
         test_sources = source_extractor.extract_test_sources(dag, dag_node_to_lineage_df)
