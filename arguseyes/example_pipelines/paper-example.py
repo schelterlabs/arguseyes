@@ -12,8 +12,6 @@ from tensorflow.python.keras.wrappers.scikit_learn import KerasClassifier
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.models import Sequential
 
-print("ARGS", sys.argv)
-
 
 def load_data(target_categories, start_date, verified_only):
     reviews = pd.read_csv('datasets/amazon-reviews/reviews.csv.gz', compression='gzip', index_col=0)

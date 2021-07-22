@@ -1,0 +1,9 @@
+series: demo-amazonreviews-covariateshift
+artifact_storage_uri: /home/ssc/Entwicklung/projects/arguseyes/mlruns/
+
+pipeline:
+  template: classification
+  path: /home/ssc/Entwicklung/projects/arguseyes/arguseyes/example_pipelines/amazon-reviews__covariate-shift.py
+  working_directory: /home/ssc/Entwicklung/projects/arguseyes/arguseyes/example_pipelines/
+  detect_issues:
+    - covariate_shift
