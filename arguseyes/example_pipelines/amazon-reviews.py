@@ -1,4 +1,5 @@
 import pandas as pd
+import sys
 
 from sklearn.preprocessing import OneHotEncoder, label_binarize, StandardScaler
 from sklearn.compose import ColumnTransformer
@@ -8,6 +9,16 @@ from sklearn.pipeline import Pipeline
 
 target_categories = ['Digital_Video_Games']
 split_date = '2015-07-31'
+start_date = '2015-01-01'
+
+if len(sys.argv) > 1:
+    target_categories = [sys.argv[1]]
+
+if len(sys.argv) > 2:
+    split_date = sys.argv[2]
+
+if len(sys.argv) > 3:
+    start_date = sys.argv[3]
 
 reviews = pd.read_csv('datasets/amazon-reviews/reviews.csv.gz', compression='gzip', index_col=0)
 products = pd.read_csv('datasets/amazon-reviews/products.csv', index_col=0)
@@ -16,7 +27,7 @@ ratings = pd.read_csv('datasets/amazon-reviews/ratings.csv', index_col=0)
 
 reviews = reviews[reviews.verified_purchase == 'Y']
 reviews = reviews[reviews.marketplace == 'US']
-reviews = reviews[reviews.review_date >= '2015-01-01']
+reviews = reviews[reviews.review_date >= start_date]
 
 reviews_with_ratings = reviews.merge(ratings, on='review_id')
 

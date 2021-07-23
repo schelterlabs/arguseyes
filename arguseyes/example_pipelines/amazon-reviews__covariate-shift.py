@@ -42,8 +42,8 @@ reviews_with_products_and_ratings['title_and_review_text'] = \
 train_data = reviews_with_products_and_ratings[reviews_with_products_and_ratings.review_date <= split_date]
 test_data = reviews_with_products_and_ratings[reviews_with_products_and_ratings.review_date > split_date]
 
-# Simulating a data error in the test data which introduces covariate shift
-test_data['star_rating'] = test_data['star_rating'] * -1.0
+# Simulating a unit conversion error in the test data which introduces covariate shift
+test_data['star_rating'] = test_data['star_rating'] * 10.0
 
 train_data['is_helpful'] = train_data['helpful_votes'] > 0
 test_data['is_helpful'] = test_data['helpful_votes'] > 0
