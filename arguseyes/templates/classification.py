@@ -7,6 +7,7 @@ import tempfile
 from contextlib import redirect_stdout
 from networkx.readwrite.gpickle import read_gpickle, write_gpickle
 import pandas as pd
+import logging
 
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -22,6 +23,8 @@ from arguseyes.templates.extractors import feature_matrix_extractor
 from arguseyes.templates.extractors import source_extractor
 
 
+
+# TODO this class is too big, needs some refactoring
 class ClassificationPipeline:
 
     def __init__(self, dag, dag_node_to_lineage_df, train_sources, test_sources, X_train, X_test, y_train, y_test):
@@ -98,23 +101,25 @@ class ClassificationPipeline:
 
     @staticmethod
     def _from_result(result):
-
-        # TODO persist with mlflow
-
         dag_node_to_lineage_df = {
             node: df
             for node, lineage_map in result.dag_node_to_inspection_results.items()
             for df in lineage_map.values()
         }
 
+        logging.info(f'Identifying training sources')
         train_sources = source_extractor.extract_train_sources(result.dag, dag_node_to_lineage_df)
+        logging.info(f'Identifying test sources')
         test_sources = source_extractor.extract_test_sources(result.dag, dag_node_to_lineage_df)
 
         X_train = feature_matrix_extractor.extract_train_feature_matrix(dag_node_to_lineage_df)
+        logging.info(f'Extracted feature matrix X_train with {X_train.shape[0]} rows and {X_train.shape[1]} columns')
         X_test = feature_matrix_extractor.extract_test_feature_matrix(dag_node_to_lineage_df)
+        logging.info(f'Extracted feature matrix X_test with {X_test.shape[0]} rows and {X_test.shape[1]} columns')
 
         y_train = feature_matrix_extractor.extract_train_labels(dag_node_to_lineage_df)
         y_test = feature_matrix_extractor.extract_test_labels(dag_node_to_lineage_df)
+        logging.info(f'Extracted y_train and y_test')
 
         return ClassificationPipeline(result.dag, dag_node_to_lineage_df,
                                       train_sources, test_sources,
@@ -127,10 +132,13 @@ class ClassificationPipeline:
                                                               OperatorType.TEST_LABELS, OperatorType.SCORE,
                                                               OperatorType.JOIN])
         mlflow.start_run()
+        logging.info(f'Created run {mlflow.active_run().info.run_id} for this invocation')
 
         os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+        logging.info('Executing instrumented user pipeline with mlinspect')
         with tempfile.TemporaryDirectory() as tmpdirname:
+            logging.info('Redirecting the pipeline\'s stdout to arguseyes-pipeline-output.txt')
             with open(os.path.join(tmpdirname, 'arguseyes-pipeline-output.txt'), 'w') as tmpfile:
                 with redirect_stdout(tmpfile):
                     result = inspector \
@@ -146,6 +154,7 @@ class ClassificationPipeline:
         synthetic_cmd_args.extend(cmd_args)
         from unittest.mock import patch
         import sys
+        logging.info(f'Patching sys.argv with {synthetic_cmd_args}')
         with patch.object(sys, 'argv', synthetic_cmd_args):
             return ClassificationPipeline._execute_pipeline(PipelineInspector.on_pipeline_from_py_file(path_to_py_file))
 

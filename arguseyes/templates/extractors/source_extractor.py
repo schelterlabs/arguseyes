@@ -1,3 +1,4 @@
+import logging
 from mlinspect.inspections._inspection_input import OperatorType
 
 from arguseyes.templates.source import Source, SourceType
@@ -24,8 +25,12 @@ def _extract_sources(operator_type, dag, dag_node_to_lineage_df):
     for source_id, data in raw_sources.items():
 
         if source_id == fact_table_source_id:
+            logging.info(f'Found fact table from operator {source_id} with {len(data)} records and ' +
+                         f'the following attributes: {data.columns.values.tolist()}')
             sources.append(Source(source_id, SourceType.FACTS, data))
         else:
+            logging.info(f'Found dimension table from operator {source_id} with {len(data)} records and ' +
+                         f'the following attributes: {data.columns.values.tolist()}')
             sources.append(Source(source_id, SourceType.DIMENSION, data))
 
     return sources

@@ -14,7 +14,7 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 if len(sys.argv) != 2:
     logging.error(f'Usage: {sys.argv[0]} [path-to-yaml-config-file]')
-    sys.exit(-1)
+    sys.exit(os.EX_USAGE)
 
 yaml_file = sys.argv[1]
 
@@ -56,7 +56,8 @@ eyes = ArgusEyes(series, mlflow_artifact_storage_uri)
 
 
 with eyes.classification_pipeline_from_py_file(pipeline_path, cmd_args=synthetic_cmd_args) as pipeline:
-    logging.info(f'Created run {mlflow.active_run().info.run_id} for this invocation')
+
+    issue_detected = False
 
     for issue_name, issue_detector in issues_by_name.items():
         if issues_to_detect is not None and issue_name in issues_to_detect:
@@ -89,3 +90,8 @@ with eyes.classification_pipeline_from_py_file(pipeline_path, cmd_args=synthetic
                 logging.info(f'Computing fairness metrics with {sensitive_attribute} as sensitive attribute' +
                              f' and {non_protected_class} as non-protected class')
                 pipeline.compute(FairnessMetrics(sensitive_attribute, non_protected_class))
+
+if issue_detected:
+    sys.exit(os.EX_DATAERR)
+else:
+    sys.exit(os.EX_OK)
