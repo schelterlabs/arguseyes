@@ -67,6 +67,7 @@ with eyes.classification_pipeline_from_py_file(pipeline_path, cmd_args=synthetic
                 logging.info('Not found.')
             else:
                 logging.warning(issue_detector.error_msg(issue))
+                issue_detected = True
 
     if 'data-refinements' in pipeline_config:
         for refinement in pipeline_config['data-refinements']:
