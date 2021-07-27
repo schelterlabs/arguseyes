@@ -5,14 +5,12 @@ The idea of ArgusEyes is to use [mlinspect](https://github.com/stefan-grafberger
 
 <img src="core-idea.png">
 
-## We provide a couple of example pipelines and notebooks to showcase the usage:
+We provide a couple of [example pipelines and configurations](arguseyes/example_pipelines) to showcase the usage of ArgusEyes (note that you can run `mlflow ui --backend-store-uri ./mlruns` from the project root to view the captured artifacts and issue detection results). 
 
-* [Checking for common issues in ML](arguseyes/example_pipelines/demo-issues-in-example.ipynb) such as label shift, covariate shift, unnormalised features etc. in our [example pipeline](arguseyes/example_pipelines/paper-example.py)
- * [Determining which tuples from the raw input data are used](arguseyes/example_pipelines/demo-reviews-usage.ipynb) to train the classifier in our [Amazon Reviews pipeline](arguseyes/example_pipelines/amazon-reviews.py).
- * [Computing group fairness metrics](arguseyes/example_pipelines/demo-income-fairness.ipynb) for an [income-level classification pipeline](arguseyes/example_pipelines/income-classifier.py).
- * [Estimating the value of input samples](arguseyes/example_pipelines/demo-sneakers-valuation.ipynb) (via Shapley values) for a [shoe image classification pipeline](arguseyes/example_pipelines/sneakers.py).
+Furthermore, we setup an [example project](https://github.com/shubhaguha/arguseyes-example/actions) which demonstrates how to integrate ArgusEyes into a [github CI workflow](https://docs.github.com/en/actions).
 
-Note that you can run `mlflow ui --backend-store-uri ./mlruns` from the project root to already view some of the captured artifacts and issue detection results.
+
+
 
 ## Local setup
 
