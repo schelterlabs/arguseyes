@@ -1,6 +1,6 @@
 import mlflow
-from arguseyes.templates.classification import ClassificationPipeline
-
+#from arguseyes.templates.classification import ClassificationPipeline
+from arguseyes.extraction import with_mlinspect
 
 class ArgusEyes:
 
@@ -10,4 +10,4 @@ class ArgusEyes:
         self.mlflow.set_experiment(series_id)
 
     def classification_pipeline_from_py_file(self, pyfile, cmd_args=[]):
-        return ClassificationPipeline.from_py_file(pyfile, cmd_args)
+        return with_mlinspect.from_py_file(pyfile, cmd_args)

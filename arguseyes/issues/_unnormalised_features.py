@@ -1,7 +1,7 @@
 import numpy as np
 
-from arguseyes.issues._issue import IssueDetector, Issue
-
+from arguseyes.issues import Issue, IssueDetector
+from arguseyes.templates import Output
 
 class UnnormalisedFeatures(IssueDetector):
 
@@ -13,7 +13,7 @@ class UnnormalisedFeatures(IssueDetector):
                f' {num_non_unit_variance} non-binary features without unit variance'
 
     def _detect(self, pipeline) -> Issue:
-        X_train = pipeline.X_train
+        X_train = pipeline.outputs[Output.X_TRAIN]
         _, num_columns = X_train.shape
 
         unnormalised_feature_found = False

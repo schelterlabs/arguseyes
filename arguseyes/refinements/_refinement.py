@@ -20,8 +20,6 @@ class Refinement(ABC):
     def log_as_parquet_file(self, dataframe, filename_to_assign):
         with tempfile.TemporaryDirectory() as tmpdirname:
             temp_filename = os.path.join(tmpdirname, filename_to_assign)
-            # Currently, pyarrow cannot serialise sets
-            dataframe_without_lineage = dataframe.drop(columns=['mlinspect_lineage'])
-            table = pa.Table.from_pandas(dataframe_without_lineage, preserve_index=True)
+            table = pa.Table.from_pandas(dataframe, preserve_index=True)
             pq.write_table(table, temp_filename)
             mlflow.log_artifact(temp_filename)

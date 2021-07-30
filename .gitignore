@@ -1,3 +1,4 @@
+.DS_Store
 tmp
 build/
 dist/
@@ -12,4 +13,5 @@ venv/
 mlflow-tracking
 mlruns
 notebooks
+__pycache__
 

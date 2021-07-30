@@ -1,12 +1,8 @@
 import numpy as np
 from numba import njit, prange
 
-from mlinspect.inspections._inspection_input import OperatorType
-
-from arguseyes.refinements._refinement import Refinement
-from arguseyes.templates.source import SourceType, Source
-from arguseyes.utils.dag_extraction import find_dag_node_by_type
-
+from arguseyes.refinements import Refinement
+from arguseyes.templates import SourceType, Source, Output
 
 # removed cache=True because of https://github.com/numba/numba/issues/4908 need a workaround soon
 @njit(fastmath=True, parallel=True)
@@ -43,10 +39,10 @@ class DataValuation(Refinement):
         self.num_test_samples = num_test_samples
 
     def _compute(self, pipeline):
-        X_train = pipeline.X_train
-        X_test = pipeline.X_test
-        y_train = pipeline.y_train
-        y_test = pipeline.y_test
+        X_train = pipeline.outputs[Output.X_TRAIN]
+        X_test = pipeline.outputs[Output.X_TEST]
+        y_train = pipeline.outputs[Output.Y_TRAIN]
+        y_test = pipeline.outputs[Output.Y_TRAIN]
 
         X_test_sampled = X_test[:self.num_test_samples, :]
         y_test_sampled = y_test[:self.num_test_samples, :]
@@ -56,23 +52,24 @@ class DataValuation(Refinement):
                                                  X_test_sampled,
                                                  np.squeeze(y_test_sampled), self.k)
 
-        train_data_op = find_dag_node_by_type(OperatorType.TRAIN_DATA, pipeline.dag_node_to_lineage_df.keys())
-        inspection_result = pipeline.dag_node_to_lineage_df[train_data_op]
-        lineage_per_row = list(inspection_result['mlinspect_lineage'])
+        lineage_X_train = pipeline.output_lineage[Output.X_TRAIN]    
 
-        fact_table_source = [train_source for train_source in pipeline.train_sources
-                             if train_source.source_type == SourceType.FACTS][0]
+        fact_table_index, fact_table_source = [(index, test_source) for index, test_source in enumerate(pipeline.test_sources)
+            if test_source.source_type == SourceType.FACTS][0]
 
         shapley_values_by_row_id = {}
 
-        for polynomial, shapley_value in zip(lineage_per_row, shapley_values):
+        for polynomial, shapley_value in zip(lineage_X_train, shapley_values):
             for entry in polynomial:
                 if entry.operator_id == fact_table_source.operator_id:
                     shapley_values_by_row_id[entry.row_id] = shapley_value
 
         data = fact_table_source.data
-        data['__arguseyes__shapley_value'] = \
-            data.apply(lambda row: self._add_shapley(row, shapley_values_by_row_id), axis=1)
+        fact_table_lineage = pipeline.test_source_lineage[fact_table_index]
+
+        for row_index, row in data.iterrows():                
+            data.at[row_index, '__arguseyes__shapley_value'] = \
+                self._find_shapley(fact_table_lineage[row_index], shapley_values_by_row_id)
 
         self.log_tag('arguseyes.data_valuation.operator_id', fact_table_source.operator_id)
         self.log_tag('arguseyes.data_valuation.k', self.k)
@@ -83,8 +80,7 @@ class DataValuation(Refinement):
         return Source(fact_table_source.operator_id, fact_table_source.source_type, data)
 
     @staticmethod
-    def _add_shapley(row, shapley_values_by_row_id):
-        polynomial = row['mlinspect_lineage']
+    def _find_shapley(polynomial, shapley_values_by_row_id):
         for entry in polynomial:
             if entry.row_id in shapley_values_by_row_id:
                 return shapley_values_by_row_id[entry.row_id]

@@ -1,7 +1,7 @@
 import numpy as np
 
-from arguseyes.issues._issue import IssueDetector, Issue
-
+from arguseyes.issues import IssueDetector, Issue
+from arguseyes.templates import Output
 
 class ConstantFeatures(IssueDetector):
 
@@ -16,7 +16,10 @@ class ConstantFeatures(IssueDetector):
 
     def _detect(self, pipeline) -> Issue:
 
-        X_train = pipeline.X_train
+        #from pprint import pprint   
+        #pprint(vars(pipeline))
+
+        X_train = pipeline.outputs[Output.X_TRAIN]
         _, num_columns = X_train.shape
 
         constant_column_found = False
