@@ -1,9 +1,9 @@
 import logging
 from mlinspect.inspections._inspection_input import OperatorType
 
-from arguseyes.templates.source import Source, SourceType
-from arguseyes.utils.dag_extraction import find_dag_node_by_type, find_source_datasets
-from arguseyes.templates.heuristics.fact_table_from_star_schema import determine_fact_table_source_id
+from arguseyes.templates import Source, SourceType
+from arguseyes.extraction.dag_extraction import find_dag_node_by_type, find_source_datasets
+from arguseyes.extraction.heuristics.fact_table_from_star_schema import determine_fact_table_source_id
 
 
 def extract_train_sources(dag, dag_node_to_lineage_df):
@@ -21,8 +21,14 @@ def _extract_sources(operator_type, dag, dag_node_to_lineage_df):
     fact_table_source_id = determine_fact_table_source_id(raw_sources, data_op, dag_node_to_lineage_df)
 
     sources = []
+    source_lineage = []
 
     for source_id, data in raw_sources.items():
+ 
+        lineage = list(data['mlinspect_lineage'])
+        data = data.drop(columns=['mlinspect_lineage'], inplace=False)
+
+        source_lineage.append(lineage)
 
         if source_id == fact_table_source_id:
             logging.info(f'Found fact table from operator {source_id} with {len(data)} records and ' +
@@ -33,4 +39,4 @@ def _extract_sources(operator_type, dag, dag_node_to_lineage_df):
                          f'the following attributes: {data.columns.values.tolist()}')
             sources.append(Source(source_id, SourceType.DIMENSION, data))
 
-    return sources
+    return sources, source_lineage

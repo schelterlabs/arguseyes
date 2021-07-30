@@ -1,15 +1,11 @@
-from mlinspect.inspections._inspection_input import OperatorType
+from arguseyes.refinements import Refinement
 
-from arguseyes.refinements._refinement import Refinement
-from arguseyes.utils.dag_extraction import find_dag_node_by_type
-from arguseyes.templates.source import Source
-
+from arguseyes.templates import Source, Output
 
 class InputUsage(Refinement):
 
     @staticmethod
-    def _is_used(row, lineage_by_source):
-        polynomial = row['mlinspect_lineage']
+    def _is_used(polynomial, lineage_by_source):
         for entry in polynomial:
             if entry.operator_id in lineage_by_source:
                 if entry.row_id in lineage_by_source[entry.operator_id]:
@@ -17,13 +13,11 @@ class InputUsage(Refinement):
         return False
 
     def _compute(self, pipeline):
-        train_data_op = find_dag_node_by_type(OperatorType.TRAIN_DATA, pipeline.dag_node_to_lineage_df.keys())
-        inspection_result = pipeline.dag_node_to_lineage_df[train_data_op]
-        lineage_per_row = list(inspection_result['mlinspect_lineage'])
+        lineage_X_train = pipeline.output_lineage[Output.X_TRAIN]
 
         lineage_by_source = {}
 
-        for polynomial in lineage_per_row:
+        for polynomial in lineage_X_train:
             for entry in polynomial:
                 if entry.operator_id not in lineage_by_source:
                     lineage_by_source[entry.operator_id] = set()
@@ -34,7 +28,11 @@ class InputUsage(Refinement):
 
         for index, source in enumerate(pipeline.train_sources):
             data = source.data
-            data['__arguseyes__is_used'] = data.apply(lambda row: self._is_used(row, lineage_by_source), axis=1)
+
+            source_lineage = pipeline.train_source_lineage[index]
+
+            for row_index, row in data.iterrows():                
+                data.at[row_index, '__arguseyes__is_used'] = self._is_used(source_lineage[row_index], lineage_by_source)
 
             refined_source = Source(source.operator_id, source.source_type, data)
 

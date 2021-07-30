@@ -1,11 +1,7 @@
 import numpy as np
 
-from mlinspect.inspections._inspection_input import OperatorType
-
-from arguseyes.templates.source import SourceType
-from arguseyes.utils.dag_extraction import find_dag_node_by_type
-
-from arguseyes.refinements._refinement import Refinement
+from arguseyes.refinements import Refinement
+from arguseyes.templates import SourceType, Output
 
 
 class FairnessMetrics(Refinement):
@@ -17,21 +13,19 @@ class FairnessMetrics(Refinement):
     # TODO this assumes binary classification and currently only works attributes of the FACT table
     # TODO this needs some refactoring
     def _compute(self, pipeline):
-        fact_table_source = [test_source for test_source in pipeline.test_sources
-                             if test_source.source_type == SourceType.FACTS][0]
+        fact_table_index, fact_table_source = [(index, test_source) for index, test_source in enumerate(pipeline.test_sources)
+            if test_source.source_type == SourceType.FACTS][0]
+
+        fact_table_lineage = pipeline.test_source_lineage[fact_table_index]    
 
         # Compute group membership per tuple in the test source data
-        is_in_non_protected_by_row_id = self._group_membership_in_test_source(fact_table_source)
+        is_in_non_protected_by_row_id = self._group_membership_in_test_source(fact_table_source, fact_table_lineage)
 
-        # TODO this should be globally available for the pipline
-        # Extract prediction vector for test set
-        score_op = find_dag_node_by_type(OperatorType.SCORE, pipeline.dag_node_to_lineage_df.keys())
-        predictions_with_lineage = pipeline.dag_node_to_lineage_df[score_op]
-
-        y_pred = np.array(predictions_with_lineage['array']).reshape(-1, 1)
+        y_pred = pipeline.outputs[Output.Y_PRED]
+        lineage_y_pred = pipeline.output_lineage[Output.Y_PRED]
 
         # Compute the confusion matrix per group
-        y_test = pipeline.y_test
+        y_test = pipeline.outputs[Output.Y_TEST]
 
         non_protected_false_negatives = 0
         non_protected_true_positives = 0
@@ -43,7 +37,7 @@ class FairnessMetrics(Refinement):
         protected_true_negatives = 0
         protected_false_positives = 0
 
-        for index, polynomial in enumerate(list(predictions_with_lineage['mlinspect_lineage'])):
+        for index, polynomial in enumerate(lineage_y_pred):
             for entry in polynomial:
                 if entry.operator_id == fact_table_source.operator_id:
                     # Positive ground truth label
@@ -95,10 +89,11 @@ class FairnessMetrics(Refinement):
 
         # TODO compute more metrics
 
-    def _group_membership_in_test_source(self, fact_table_source):
+    def _group_membership_in_test_source(self, fact_table_source, fact_table_lineage):
         is_in_non_protected_by_row_id = {}
         for index, row in fact_table_source.data.iterrows():
             is_in_majority = row[self.sensitive_attribute] == self.non_protected_class
-            row_id = list(row['mlinspect_lineage'])[0].row_id
+            polynomial = fact_table_lineage[index]
+            row_id = list(polynomial)[0].row_id
             is_in_non_protected_by_row_id[row_id] = is_in_majority
         return is_in_non_protected_by_row_id
