@@ -45,7 +45,7 @@ test_data = reviews_with_products_and_ratings[reviews_with_products_and_ratings.
 train_data['is_helpful'] = train_data['helpful_votes'] > 0
 test_data['is_helpful'] = test_data['helpful_votes'] > 0
 
-# Simulate label shift by resampleing the test data to have a label proportion of 50/50
+# Simulate label shift by resampling the test data to have a label proportion of 50/50
 test_data_helpful = test_data[test_data['is_helpful'] == True]
 test_datano_helpful_sampled = test_data[test_data['is_helpful'] == False].sample(len(test_data_helpful))
 

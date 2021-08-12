@@ -64,7 +64,12 @@ def main(yaml_file):
                 if not issue.is_present:
                     logging.info('Not found.')
                 else:
-                    logging.warning(issue_detector.error_msg(issue))
+                    logging.warning(
+                        '\x1b[31;21m' + \
+                        '\n\n' + \
+                        '-' * 80 + \
+                        f'\n{issue_detector.error_msg(issue)}\n' + \
+                        '-' * 80 + '\n\x1b[0m')
                     issue_detected = True
 
         if 'data-refinements' in pipeline_config:

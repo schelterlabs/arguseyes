@@ -14,3 +14,6 @@ class TrainTestOverlap(IssueDetector):
 
         # TODO maybe output tuple ids in the future
         return Issue('traintest_overlap', has_overlap, {'num_overlapping_records': num_overlapping_records})
+
+    def error_msg(self, issue) -> str:
+        return f'Found {issue.id}, {issue.details["num_overlapping_records"]} records present in both train and test set!'

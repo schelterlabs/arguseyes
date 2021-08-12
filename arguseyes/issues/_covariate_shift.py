@@ -43,3 +43,9 @@ class CovariateShift(IssueDetector):
         covariate_shift = auc > auc_threshold
 
         return Issue('covariate_shift', covariate_shift, {'test_size': 0.2, 'auc': auc, 'auc_threshold': auc_threshold})
+
+
+    def error_msg(self, issue) -> str:
+        return f'Found {issue.id}, random forest classifier could distinguish between train\n' + \
+               f'and test set with a AuC of {issue.details["auc"]} > {issue.details["auc_threshold"]}!'
+
