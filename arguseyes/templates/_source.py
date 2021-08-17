@@ -6,8 +6,8 @@ from enum import Enum
 
 
 class SourceType(Enum):
-    FACTS = "Facts"
-    DIMENSION = "Dimension"
+    ENTITIES = "Entities"
+    SIDE_DATA = "SideData"
 
 
 @dataclasses.dataclass

@@ -14,7 +14,7 @@ class FairnessMetrics(Refinement):
     # TODO this needs some refactoring
     def _compute(self, pipeline):
         fact_table_index, fact_table_source = [(index, test_source) for index, test_source in enumerate(pipeline.test_sources)
-            if test_source.source_type == SourceType.FACTS][0]
+                                               if test_source.source_type == SourceType.ENTITIES][0]
 
         fact_table_lineage = pipeline.test_source_lineage[fact_table_index]    
 

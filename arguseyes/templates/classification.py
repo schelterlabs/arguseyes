@@ -29,7 +29,21 @@ class ClassificationPipeline:
         X_train = self.outputs[Output.X_TRAIN]
         X_test = self.outputs[Output.X_TEST]
 
-        # todo log input details as well
+        for train_source in self.train_sources:
+            source_id = train_source.operator_id
+            mlflow.log_param(f'arguseyes.train_source.{source_id}.type', train_source.source_type)
+            mlflow.log_param(f'arguseyes.train_source.{source_id}.num_records', len(train_source.data))            
+            mlflow.log_param(f'arguseyes.train_source.{source_id}.attributes', list(train_source.data.columns)) 
+            mlflow.log_param(f'arguseyes.train_source.{source_id}.attribute_types', 
+                [str(dtype) for dtype in train_source.data.dtypes])    
+
+        for test_source in self.test_sources:
+            source_id = test_source.operator_id
+            mlflow.log_param(f'arguseyes.test_source.{source_id}.type', test_source.source_type)
+            mlflow.log_param(f'arguseyes.test_source.{source_id}.num_records', len(test_source.data))
+            mlflow.log_param(f'arguseyes.test_source.{source_id}.attributes', list(test_source.data.columns))
+            mlflow.log_param(f'arguseyes.test_source.{source_id}.attribute_types',
+                [str(dtype) for dtype in test_source.data.dtypes])
 
         mlflow.log_param("arguseyes.X_train.num_rows", X_train.shape[0])
         mlflow.log_param("arguseyes.X_train.num_features", X_train.shape[1])

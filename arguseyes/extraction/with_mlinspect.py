@@ -2,7 +2,6 @@ import os
 import mlflow
 from mlflow.tracking import MlflowClient
 from PIL import Image
-import json
 import tempfile
 from contextlib import redirect_stdout
 from networkx.readwrite.gpickle import read_gpickle, write_gpickle
@@ -13,6 +12,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from mlinspect import PipelineInspector
+from mlinspect.inspections import ArgumentCapturing
 from mlinspect.inspections._lineage import RowLineage, LineageId
 from mlinspect.visualisation import save_fig_to_path
 from mlinspect.inspections._inspection_input import OperatorType
@@ -41,6 +41,8 @@ def _execute_pipeline(inspector: PipelineInspector):
                                                           OperatorType.TRAIN_LABELS, OperatorType.TEST_DATA,
                                                           OperatorType.TEST_LABELS, OperatorType.SCORE,
                                                           OperatorType.JOIN])
+    argument_capturing_inspection = ArgumentCapturing()
+
     mlflow.start_run()
     logging.info(f'Created run {mlflow.active_run().info.run_id} for this invocation')
 
@@ -53,13 +55,29 @@ def _execute_pipeline(inspector: PipelineInspector):
             with redirect_stdout(tmpfile):
                 result = inspector \
                     .add_required_inspection(lineage_inspection) \
+                    .add_required_inspection(argument_capturing_inspection) \
                     .execute()
                 mlflow.log_artifact(tmpfile.name)
 
+    captured_arguments = {
+        node: node_results[argument_capturing_inspection]
+        for node, node_results in result.dag_node_to_inspection_results.items()
+    }
+
+    for node, args in captured_arguments.items():
+        if len(args) > 0:
+            node_id = node.node_id
+            mlflow.log_param(f'arguseyes.preprocessing.{node_id}.type',
+                             node.operator_info.function_info.function_name)
+            mlflow.log_param(f'arguseyes.preprocessing.{node_id}.arguments',
+                             args)
+
     dag_node_to_lineage_df = {
-        node: df
-        for node, lineage_map in result.dag_node_to_inspection_results.items()
-        for df in lineage_map.values()
+        # node: df
+        # for node, lineage_map in result.dag_node_to_inspection_results.items()
+        # for df in lineage_map.values()
+        node: node_results[lineage_inspection]
+        for node, node_results in result.dag_node_to_inspection_results.items()
     }    
 
     return _from_dag_and_lineage(result.dag, dag_node_to_lineage_df)
@@ -163,4 +181,4 @@ def _log_mlinspect_results(dag, dag_node_to_lineage_df):
             mod_df['mlinspect_lineage'] = lineage_column
             table = pa.Table.from_pandas(mod_df, preserve_index=True)
             pq.write_table(table, temp_filename)
-            mlflow.log_artifact(temp_filename)    
+            mlflow.log_artifact(temp_filename)

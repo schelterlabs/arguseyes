@@ -37,7 +37,7 @@ def load_data(target_categories, start_date, verified_only):
         full_reviews['review_body'].fillna(value='')
 
     full_reviews['title_and_review'] = full_reviews['product_title'].fillna(value='') \
-                                       + ' ' + full_reviews['review_body'].fillna(value='')
+        + ' ' + full_reviews['review_body'].fillna(value='')
 
     return full_reviews
 
@@ -48,6 +48,8 @@ def temporal_split(full_reviews, split_date):
 
     train_data['is_helpful'] = train_data['helpful_votes'] > 0
     test_data['is_helpful'] = test_data['helpful_votes'] > 0
+
+    test_data['star_rating'] = test_data['star_rating'] * 10.0
 
     train_labels = label_binarize(train_data['is_helpful'], classes=[True, False])
     test_labels = label_binarize(test_data['is_helpful'], classes=[True, False])
@@ -115,4 +117,3 @@ pipeline = Pipeline([
 
 model = pipeline.fit(train_data, train_labels)
 model.score(test_data, test_labels)
-

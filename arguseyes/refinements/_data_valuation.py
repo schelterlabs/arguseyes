@@ -55,7 +55,7 @@ class DataValuation(Refinement):
         lineage_X_train = pipeline.output_lineage[Output.X_TRAIN]    
 
         fact_table_index, fact_table_source = [(index, test_source) for index, test_source in enumerate(pipeline.test_sources)
-            if test_source.source_type == SourceType.FACTS][0]
+                                               if test_source.source_type == SourceType.ENTITIES][0]
 
         shapley_values_by_row_id = {}
 

@@ -96,10 +96,21 @@ def main(yaml_file):
                     pipeline.compute(FairnessMetrics(sensitive_attribute, non_protected_class))
 
     if issue_detected:
-        click.echo("Pipeline fails ArgusEyes screening")
+        logging.error(
+            '\x1b[31;21m' + \
+            '\n\n' + \
+            '-' * 80 + \
+            '\n Pipeline fails ArgusEyes screening\n' + \
+            '-' * 80 + '\n\x1b[0m')
         sys.exit(os.EX_DATAERR)
     else:
-        click.echo("Pipeline passes ArgusEyes screening")
+        logging.info(
+            '\x1b[33;92m' + \
+            '\n\n' + \
+            '-' * 80 + \
+            '\n Pipeline passes ArgusEyes screening\n' + \
+            '-' * 80 + '\n\x1b[0m')
+
         sys.exit(os.EX_OK)
 
 

@@ -33,10 +33,10 @@ def _extract_sources(operator_type, dag, dag_node_to_lineage_df):
         if source_id == fact_table_source_id:
             logging.info(f'Found fact table from operator {source_id} with {len(data)} records and ' +
                          f'the following attributes: {data.columns.values.tolist()}')
-            sources.append(Source(source_id, SourceType.FACTS, data))
+            sources.append(Source(source_id, SourceType.ENTITIES, data))
         else:
             logging.info(f'Found dimension table from operator {source_id} with {len(data)} records and ' +
                          f'the following attributes: {data.columns.values.tolist()}')
-            sources.append(Source(source_id, SourceType.DIMENSION, data))
+            sources.append(Source(source_id, SourceType.SIDE_DATA, data))
 
     return sources, source_lineage

@@ -1,9 +1,9 @@
-mlinspect[dev] @ git+https://github.com/stefan-grafberger/mlinspect.git@dff3c6521319d32a6d8ded3c909200902b926d5f
+mlinspect[dev] @ git+https://github.com/stefan-grafberger/mlinspect.git@dd94830649c89dc713d38b7b44600edba73f1b46
 importnb==0.6.2
 matplotlib==3.4.2
 mlflow==1.18
 numba==0.53
-# This is problematic on MacOSß
+# This is problematic on MacOS
 # icc-rt==2020.0.133
 pyyaml==5.4.1
 pyarrow==4.0.1
