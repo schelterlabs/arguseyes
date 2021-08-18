@@ -7,7 +7,7 @@ The idea of ArgusEyes is to use [mlinspect](https://github.com/stefan-grafberger
 
 We provide a couple of [example pipelines and configurations](arguseyes/example_pipelines) to showcase the usage of ArgusEyes (note that you can run `mlflow ui --backend-store-uri ./mlruns` from the project root to view the captured artifacts and issue detection results). 
 
-Furthermore, we setup an [example project](https://github.com/shubhaguha/arguseyes-example/actions) which demonstrates how to integrate ArgusEyes into a [github CI workflow](https://docs.github.com/en/actions).
+Furthermore, we setup an [example project](https://github.com/schelterlabs/arguseyes-example/actions) which demonstrates how to integrate ArgusEyes into a [github CI workflow](https://docs.github.com/en/actions).
 
 
 
