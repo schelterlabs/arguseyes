@@ -3,7 +3,6 @@ import os
 import sys
 import yaml
 import logging
-import mlflow
 
 from arguseyes import ArgusEyes
 from arguseyes.issues import *
@@ -102,7 +101,7 @@ def main(yaml_file):
             '-' * 80 + \
             '\n Pipeline fails ArgusEyes screening\n' + \
             '-' * 80 + '\n\x1b[0m')
-        sys.exit(os.EX_DATAERR)
+        sys.exit(1)
     else:
         logging.info(
             '\x1b[33;92m' + \
@@ -111,7 +110,7 @@ def main(yaml_file):
             '\n Pipeline passes ArgusEyes screening\n' + \
             '-' * 80 + '\n\x1b[0m')
 
-        sys.exit(os.EX_OK)
+        sys.exit(0)
 
 
 if __name__ == "__main__":
