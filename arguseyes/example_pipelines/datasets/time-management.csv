@@ -1,0 +1,126 @@
+Number,Age,Gender,Nationality,Program,Course,English,Academic,Attendance,6,7,8,9,10,11,12,13,14,15,16,17
+1,31-35,M,Korea,PM,Social Sciences and Humanities,60%~70%,,S0,Disagree,Agree,Strong Agree,Neither,Agree,Neither,Disagree,Strong Disagree,Strong Agree,Neither,Disagree,Agree
+2,26-30,M,China,PM,Science and engineering,60%~70%,50%~59%,S3,Strong Agree,Agree,Neither,Disagree,Agree,Neither,Disagree,Strong Disagree,Neither,Agree,Neither,Disagree
+3,26-30,M,Kenya,PM,Business,60%~70%,,S0,Disagree,Strong Agree,Agree,Disagree,Agree,Agree,Disagree,Strong Disagree,Disagree,Strong Agree,Strong Agree,Disagree
+4,21-25,M,Vietnam,PM,Law/Legal studies,60%~70%,60%~70%,S0,Disagree,Disagree,Agree,Agree,Disagree,Agree,Neither,Neither,Neither,Neither,Disagree,Agree
+5,21-25,M,China,PM,Business,60%~70%,50%~59%,S1,Neither,Disagree,Neither,Neither,Disagree,Neither,Neither,Neither,Neither,Disagree,Neither,Agree
+6,21-25,M,China,PM,Law/Legal studies,60%~70%,60%~70%,S0,Agree,Neither,Agree,Strong Agree,Disagree,Disagree,Strong Agree,Agree,Strong Agree,Strong Agree,Strong Disagree,Strong Agree
+7,21-25,M,China,PM,Art and Design,60%~70%,60%~70%,S0,Disagree,Agree,Agree,Neither,Agree,Neither,Neither,Strong Disagree,Disagree,Strong Disagree,Strong Disagree,Neither
+8,21-25,M,China,PM,Business,60%~70%,,S0,Agree,Neither,Neither,Agree,Agree,Neither,Agree,Neither,Agree,Agree,Agree,Agree
+9,21-25,M,China,PM,Computing,60%~70%,40%~49%,S0,Disagree,Disagree,Strong Disagree,Agree,Disagree,Agree,Agree,Disagree,Agree,Disagree,Disagree,Disagree
+10,21-25,M,China,PM,Computing,60%~70%,>70%,S0,Strong Disagree,Agree,Agree,Neither,Disagree,Strong Disagree,Strong Disagree,Strong Disagree,Agree,Agree,Strong Disagree,Strong Disagree
+11,21-25,M,China,PM,Business,60%~70%,>70%,S1,Strong Disagree,Neither,Neither,Neither,Neither,Neither,Neither,Neither,Neither,Neither,Neither,Neither
+12,18-20,M,China,IYO,Business,60%~70%,50%~59%,S1,Neither,Disagree,Neither,Neither,Strong Agree,Agree,Neither,Disagree,Agree,Agree,Neither,Agree
+13,18-20,M,China,IYO,Business,60%~70%,60%~70%,S3,Disagree,Neither,Neither,Neither,Disagree,Disagree,Disagree,Disagree,Disagree,Disagree,Agree,Agree
+14,18-20,M,India,IYO,Business,60%~70%,60%~70%,S2,Agree,Agree,Agree,Agree,Neither,Neither,Agree,Neither,Strong Agree,Neither,Agree,Agree
+15,18-20,M,Saudi Arabia,FC,Business,>70%,60%~70%,S1,Disagree,Agree,Disagree,Agree,Strong Disagree,Disagree,Strong Agree,Strong Disagree,Agree,Neither,Agree,Disagree
+16,18-20,M,China,FC,Business,>70%,>70%,S1,Strong Agree,Strong Agree,Agree,Neither,Strong Agree,Strong Agree,Agree,Strong Agree,Agree,Neither,Agree,Neither
+17,>36,M,Korea,PM,Law/Legal studies,>70%,,S0,Neither,Disagree,Agree,Agree,Neither,Disagree,Disagree,Disagree,Neither,Disagree,Disagree,Neither
+18,<18,M,Saudi Arabia,FC,Computing,>70%,60%~70%,S0,Disagree,Disagree,Neither,Agree,Neither,Strong Disagree,Neither,Agree,Neither,Strong Agree,Neither,Neither
+19,<18,M,Tanzania,FC,Business,60%~70%,60%~70%,S0,Disagree,Disagree,Agree,Disagree,Strong Agree,Disagree,Disagree,Agree,Agree,Disagree,Agree,Neither
+20,<18,M,China,FC,Business,60%~70%,60%~70%,S0,Agree,Agree,Strong Agree,Agree,Strong Agree,Strong Agree,Agree,Strong Agree,Agree,Agree,Agree,Agree
+21,18-20,M,Oman,FC,Social Sciences and Humanities,60%~70%,>70%,S4,Strong Agree,Agree,Strong Agree,Neither,Disagree,Neither,Agree,Disagree,Agree,Disagree,Neither,Neither
+22,18-20,M,Jordan,FC,Media and Communications,60%~70%,60%~70%,S0,Disagree,Neither,Neither,Neither,Agree,Agree,Agree,Disagree,Agree,Agree,Agree,Agree
+23,18-20,M,Zimbabwe,FC,Art and Design,60%~70%,>70%,S0,Disagree,Disagree,Disagree,Agree,Disagree,Agree,Agree,Strong Disagree,Disagree,Agree,Agree,Disagree
+24,18-20,M,Oman,FC,Social Sciences and Humanities,60%~70%,,S0,Disagree,Disagree,Neither,Disagree,Neither,Disagree,Strong Agree,Strong Disagree,Neither,Disagree,Disagree,Agree
+25,18-20,M,Portugal,FC,Business,60%~70%,50%~59%,S3,Agree,Strong Agree,Neither,Agree,Neither,Neither,Disagree,Strong Agree,Neither,Neither,Strong Agree,Disagree
+26,18-20,M,Oman,FC,Law/Legal studies,60%~70%,,S0,,Neither,Agree,Disagree,Disagree,Neither,Neither,Strong Disagree,Strong Disagree,Neither,Neither,Agree
+27,18-20,M,China,FC,Business,60%~70%,60%~70%,S2,Neither,Agree,Neither,Agree,Disagree,Agree,Neither,Neither,Strong Disagree,Strong Agree,Neither,Strong Disagree
+28,<18,M,Georgia,IYO,Business,60%~70%,50%~59%,S3,Strong Agree,Agree,Disagree,Strong Disagree,Strong Disagree,Strong Disagree,Disagree,Strong Disagree,Agree,Neither,Strong Agree,Strong Disagree
+29,18-20,M,China,IYO,Business,60%~70%,50%~59%,S1,Strong Disagree,Agree,Agree,Neither,Agree,Agree,Agree,Agree,Agree,Agree,Agree,Agree
+30,18-20,M,India,IYO,Business,60%~70%,60%~70%,S2,Neither,Neither,Neither,Neither,Neither,Disagree,Neither,Neither,Neither,Agree,Neither,Neither
+31,>36,M,China,Language,Art and Design,50%~59%,50%~59%,S2,Strong Agree,Agree,Agree,Neither,Neither,Neither,Agree,Agree,Neither,Agree,Agree,Strong Agree
+32,18-20,M,China,FC,Business,50%~59%,,S0,Neither,Disagree,Agree,Disagree,Neither,Agree,Disagree,Agree,Neither,Strong Agree,Agree,Strong Agree
+33,18-20,M,China,PM,Business,50%~59%,60%~70%,S0,Neither,Agree,Disagree,Neither,Agree,Disagree,Strong Agree,Agree,Disagree,Neither,Agree,Neither
+34,21-25,M,China,PM,Computing,50%~59%,60%~70%,S0,Neither,Strong Disagree,Neither,Neither,Neither,Neither,Neither,Strong Disagree,Disagree,Agree,Agree,Agree
+35,21-25,M,China,PM,Media and Communications,50%~59%,50%~59%,S1,Disagree,Neither,Agree,Disagree,Neither,Neither,Neither,Neither,Agree,Disagree,Disagree,Agree
+36,21-25,M,China,PM,Business,50%~59%,50%~59%,S0,Agree,Disagree,Disagree,Strong Disagree,Disagree,Disagree,Neither,Strong Disagree,Disagree,Strong Agree,Disagree,Disagree
+37,21-25,M,China,PM,Business,50%~59%,50%~59%,,Agree,Disagree,,,Strong Agree,Strong Agree,Disagree,Disagree,Neither,Neither,Agree,Agree
+38,21-25,M,China,PM,Business,50%~59%,50%~59%,S0,Disagree,Neither,Agree,Disagree,Disagree,Disagree,Disagree,Strong Disagree,Agree,Disagree,Disagree,Neither
+39,21-25,M,China,IYO,Social Sciences and Humanities,50%~59%,60%~70%,S1,Agree,Neither,Disagree,,Strong Agree,Disagree,Neither,Neither,Disagree,Agree,Neither,Strong Disagree
+40,21-25,M,Singapore,PM,Business,50%~59%,60%~70%,S2,Neither,Strong Disagree,Neither,Agree,Agree,Neither,,Strong Agree,Neither,Agree,Agree,Neither
+41,26-30,M,China,PM,Business,50%~59%,50%~59%,S2,Disagree,Disagree,Agree,Agree,Agree,Disagree,Agree,Disagree,Disagree,Agree,Disagree,
+42,26-30,M,China,PM,Business,50%~59%,50%~59%,S2,Disagree,Agree,Agree,Disagree,Neither,Neither,Neither,Neither,Disagree,Disagree,Agree,Disagree
+43,31-35,M,China,PM,Business,50%~59%,50%~59%,S2,Strong Agree,Strong Agree,Strong Agree,Strong Agree,Strong Agree,Strong Agree,Agree,Agree,Strong Agree,Strong Agree,Strong Agree,Strong Agree
+44,21-25,M,China,PM,Law/Legal studies,60%~70%,60%~70%,S2,Agree,Agree,Agree,Agree,Agree,Agree,Agree,Agree,Agree,Agree,Agree,Agree
+45,21-25,M,China,PM,Business,40%~49%,40%~49%,S3,Neither,Neither,Agree,Neither,Neither,Neither,Neither,Disagree,Agree,Neither,Disagree,Agree
+46,21-25,M,China,PM,Business,60%~70%,50%~59%,S0,Disagree,Disagree,Agree,Agree,Disagree,Disagree,Disagree,Disagree,Disagree,Disagree,Disagree,Agree
+47,21-25,M,Saudi Arabia,FC,Business,60%~70%,50%~59%,S2,Agree,Agree,Agree,Neither,Disagree,Agree,Neither,Disagree,Disagree,Agree,Agree,Neither
+48,21-25,M,China,PM,Business,60%~70%,60%~70%,S0,Disagree,Disagree,Agree,Neither,Strong Disagree,Strong Disagree,Disagree,Disagree,Disagree,Neither,Disagree,Disagree
+49,21-25,M,China,PM,Business,50%~59%,40%~49%,S3,Neither,Neither,Neither,Disagree,Agree,Neither,Strong Agree,Neither,Disagree,Neither,Neither,Disagree
+50,26-30,M,China,PM,Business,60%~70%,40%~49%,S0,Neither,Agree,Agree,Agree,Strong Agree,Agree,Agree,Disagree,Neither,Neither,Neither,Neither
+51,21-25,M,China,PM,Business,60%~70%,50%~59%,S0,Neither,Agree,Disagree,Neither,Agree,Neither,Neither,Agree,Neither,Neither,Agree,Neither
+52,21-25,M,China,PM,Business,50%~59%,<40%,S3,Agree,Agree,Neither,Disagree,Neither,Neither,Agree,Neither,Disagree,Neither,Agree,Agree
+53,21-25,M,China,PM,Business,50%~59%,50%~59%,S1,Agree,Neither,Agree,Agree,Neither,Agree,Neither,Neither,Agree,Neither,Agree,Disagree
+54,26-30,M,China,PM,Business,60%~70%,50%~59%,S1,Agree,Agree,Agree,Agree,Strong Disagree,Disagree,Neither,Strong Disagree,Neither,Neither,Strong Agree,Strong Disagree
+55,21-25,M,China,PM,Business,50%~59%,60%~70%,S1,Agree,Neither,Agree,Neither,Disagree,Disagree,Neither,Neither,Agree,Agree,Neither,Agree
+56,31-35,M,China,PM,Business,50%~59%,50%~59%,S0,Disagree,Neither,Disagree,Disagree,Neither,Agree,Disagree,Disagree,Agree,Neither,Agree,Neither
+57,21-25,F,China,PM,Law/Legal studies,60%~70%,,S0,Agree,Neither,Neither,Agree,Disagree,Agree,,Disagree,,Strong Agree,Strong Agree,Neither
+58,21-25,F,Vietnam,PM,Law/Legal studies,60%~70%,60%~70%,S0,Disagree,Neither,Strong Agree,,Agree,Disagree,Strong Disagree,Strong Disagree,Disagree,Agree,Agree,Disagree
+59,21-25,F,China,PM,Business,50%~59%,50%~59%,S0,Disagree,Neither,Disagree,Agree,Disagree,Strong Agree,Agree,Strong Disagree,Disagree,Strong Agree,Agree,Disagree
+60,21-25,F,Malaysia,PM,Law/Legal studies,>70%,>70%,S1,Disagree,Disagree,Neither,Disagree,Disagree,Strong Agree,Agree,Neither,Disagree,Agree,Agree,Disagree
+61,21-25,F,Saudi Arabia,FC,Law/Legal studies,60%~70%,60%~70%,S0,Disagree,Neither,Agree,Neither,Agree,Disagree,Disagree,Disagree,Agree,Agree,Agree,Neither
+62,21-25,F,China,FC,Art and Design,60%~70%,,S0,Strong Disagree,Neither,Agree,Neither,Agree,Agree,Disagree,Neither,Disagree,Disagree,Strong Disagree,Neither
+63,21-25,F,Saudi Arabia,FC,Business,60%~70%,,S0,Strong Disagree,Neither,Agree,Neither,Agree,Strong Disagree,Disagree,Strong Disagree,Agree,Disagree,Agree,Agree
+64,26-30,F,China,PM,Business,50%~59%,50%~59%,S0,Disagree,Disagree,Agree,Disagree,Agree,Disagree,Disagree,Disagree,Agree,Disagree,Disagree,Agree
+65,26-30,F,China,PM,Business,60%~70%,60%~70%,S0,Disagree,Strong Disagree,Neither,Neither,Agree,Neither,Agree,Strong Disagree,Neither,Strong Agree,Agree,Agree
+66,26-30,F,China,PM,Business,>70%,,S0,Disagree,Agree,Agree,Neither,Agree,Disagree,Neither,Strong Disagree,Agree,Disagree,Disagree,Agree
+67,<18,F,Qatar,FC,Law/Legal studies,60%~70%,60%~70%,S1,Strong Disagree,Agree,Neither,Neither,Neither,Neither,Neither,Disagree,Neither,Agree,Agree,Agree
+68,18-20,F,Oman,FC,Social Sciences and Humanities,>70%,60%~70%,S0,Neither,Disagree,Agree,Neither,Agree,Disagree,Strong Agree,Strong Disagree,Neither,Agree,Agree,Disagree
+69,21-25,F,China,PM,Computing,60%~70%,60%~70%,S1,Strong Disagree,Agree,Agree,Agree,Agree,Disagree,Disagree,Strong Disagree,Strong Agree,Strong Disagree,Disagree,Disagree
+70,26-30,F,Turkey,PM,Computing,50%~59%,>70%,S1,Strong Disagree,Neither,Agree,Strong Disagree,Neither,Agree,Disagree,Strong Disagree,Neither,Neither,Disagree,Neither
+71,>36,F,Oman,FC,Media and Communications,50%~59%,40%~49%,S1,Agree,Agree,Agree,Neither,Neither,Neither,Agree,Agree,Disagree,Disagree,,Strong Disagree
+72,<18,F,Saudi Arabia,FC,Science and engineering,60%~70%,60%~70%,S1,Disagree,Disagree,,Agree,Disagree,Agree,Neither,Neither,Neither,Agree,Agree,Disagree
+73,18-20,F,Kuwait,FC,Science and engineering,40%~49%,40%~49%,S1,Neither,Disagree,Neither,Agree,Neither,Neither,Neither,Disagree,Disagree,Agree,Agree,Neither
+74,18-20,F,Kuwait,FC,Science and engineering,60%~70%,60%~70%,S1,Disagree,Disagree,Agree,Agree,Disagree,Strong Agree,Agree,Disagree,Disagree,Disagree,Neither,Disagree
+75,18-20,F,Vietnam,IYO,Business,,>70%,S0,Neither,Disagree,Strong Agree,Agree,Disagree,Neither,Neither,Disagree,Disagree,Neither,Agree,Neither
+76,18-20,F,India,IYO,Business,>70%,60%~70%,S0,Disagree,Agree,Neither,Disagree,Neither,Agree,Neither,Neither,Agree,Neither,Agree,Neither
+77,18-20,F,China,IYO,Business,50%~59%,40%~49%,S1,Strong Agree,Strong Disagree,Neither,Strong Disagree,Strong Disagree,Strong Disagree,Strong Agree,Strong Disagree,Strong Disagree,Strong Agree,Strong Agree,Strong Disagree
+78,18-20,F,OCEAN,PM,Law/Legal studies,<40%,<40%,S4,,Neither,,,,,,Neither,Neither,Neither,,Strong Agree
+79,18-20,F,UK,IYO,Business,>70%,50%~59%,S2,Strong Agree,Neither,Agree,Agree,Agree,Neither,Agree,Strong Disagree,Neither,Strong Agree,Strong Agree,Agree
+80,18-20,F,China,IYO,Business,60%~70%,60%~70%,S1,Agree,Neither,Neither,Neither,Neither,Agree,Agree,Disagree,Neither,Neither,Neither,Neither
+81,18-20,F,China,IYO,Business,60%~70%,>70%,S0,Strong Disagree,Agree,Agree,Neither,Agree,Disagree,Disagree,Strong Disagree,Strong Disagree,Neither,Agree,Agree
+82,18-20,F,China,IYO,Business,60%~70%,40%~49%,S3,Neither,Disagree,Agree,Agree,Strong Disagree,Agree,Neither,Disagree,Strong Disagree,Strong Agree,Neither,Disagree
+83,18-20,F,Turkey,FC,Art and Design,60%~70%,60%~70%,S0,Strong Disagree,Strong Agree,Strong Agree,Agree,Strong Agree,Strong Disagree,Neither,Strong Disagree,Neither,Agree,Neither,Disagree
+84,18-20,F,Zimbabwe,FC,Law/Legal studies,>70%,>70%,S0,Neither,Neither,Neither,Neither,Agree,Neither,Disagree,Disagree,Disagree,Agree,Disagree,Disagree
+85,18-20,F,Pakistan,FC,Law/Legal studies,>70%,>70%,S0,Disagree,Disagree,Agree,Neither,Disagree,Disagree,Neither,Disagree,Agree,Disagree,Disagree,Neither
+86,18-20,F,China,FC,Social Sciences and Humanities,50%~59%,60%~70%,S0,Agree,Disagree,Neither,Agree,Neither,Agree,Neither,Strong Agree,Disagree,Strong Agree,Disagree,Strong Disagree
+87,18-20,F,Qatar,FC,Social Sciences and Humanities,60%~70%,,S0,Strong Disagree,Disagree,Strong Agree,Disagree,Disagree,Strong Disagree,Neither,Strong Disagree,Agree,Agree,Strong Agree,Strong Disagree
+88,18-20,F,Thailand,FC,Business,60%~70%,,S0,Neither,Neither,Neither,Neither,Neither,Neither,Neither,Neither,Neither,Neither,Neither,Neither
+89,18-20,F,China,FC,Business,60%~70%,,S1,Neither,Neither,Neither,Neither,Agree,Agree,Neither,Neither,Strong Agree,Neither,Strong Disagree,Neither
+90,18-20,F,Indonesia,FC,Social Sciences and Humanities,>70%,,S0,Neither,Agree,Neither,Disagree,Strong Disagree,Strong Disagree,Neither,Strong Disagree,Agree,Neither,Neither,Disagree
+91,21-25,F,Korea,PM,Art and Design,60%~70%,,S0,Disagree,Agree,Agree,Agree,Agree,Neither,Neither,Agree,Agree,Disagree,Disagree,Agree
+92,21-25,F,China,PM,Business,50%~59%,50%~59%,S1,Agree,Disagree,Disagree,Agree,Disagree,Disagree,Agree,Disagree,Agree,Agree,Agree,Disagree
+93,21-25,F,China,PM,Business,50%~59%,50%~59%,S1,Disagree,Disagree,Agree,Agree,Neither,Disagree,Disagree,Disagree,Neither,Strong Agree,Agree,Agree
+94,21-25,F,Tanzania,PM,Business,,,,Strong Disagree,Agree,Agree,Disagree,Strong Disagree,Neither,Neither,Strong Disagree,Agree,Neither,Disagree,Agree
+95,21-25,F,China,PM,Art and Design,50%~59%,60%~70%,S2,Disagree,Neither,Neither,Neither,Neither,Disagree,Neither,Disagree,Agree,Neither,Neither,Neither
+96,21-25,F,China,PM,Business,50%~59%,50%~59%,S1,Disagree,Agree,Agree,,Agree,,Neither,Disagree,Disagree,Disagree,Strong Disagree,Disagree
+97,21-25,F,Korea,PM,Business,,,,Disagree,Agree,Strong Agree,Neither,Strong Agree,Strong Disagree,Agree,Disagree,Neither,Disagree,Disagree,Agree
+98,21-25,F,China,PM,Business,60%~70%,60%~70%,S0,Disagree,Strong Disagree,Strong Agree,Disagree,Agree,Disagree,Disagree,Strong Disagree,Agree,Agree,Disagree,Disagree
+99,21-25,F,China,PM,Business,50%~59%,50%~59%,S0,Agree,Strong Agree,Agree,Neither,Agree,Disagree,Strong Agree,Disagree,Agree,Neither,Neither,Agree
+100,21-25,F,China,PM,Business,,,,Disagree,Agree,Agree,,Agree,Disagree,Neither,Disagree,Neither,Disagree,Disagree,Agree
+101,21-25,F,China,PM,Business,>70%,60%~70%,S4,Strong Disagree,Strong Agree,Strong Agree,Strong Disagree,Strong Agree,Disagree,Strong Disagree,Disagree,Strong Agree,Strong Disagree,Agree,Strong Agree
+102,21-25,F,Trinidad and Tobago,PM,Social Sciences and Humanities,>70%,>70%,S2,Neither,Disagree,Neither,Agree,Agree,Disagree,Neither,Strong Disagree,Strong Agree,Neither,Agree,Agree
+103,21-25,F,China,PM,Business,50%~59%,50%~59%,S1,Disagree,Neither,,Neither,Neither,Neither,Neither,Strong Disagree,Neither,Neither,Neither,Neither
+104,21-25,F,China,PM,Business,50%~59%,60%~70%,S0,Disagree,Neither,Agree,Neither,Agree,Strong Disagree,Agree,Neither,Agree,Disagree,Agree,Neither
+105,21-25,F,China,PM,Business,50%~59%,50%~59%,S0,Disagree,Strong Disagree,Disagree,,Agree,Disagree,Agree,Disagree,Agree,Disagree,Agree,Disagree
+106,21-25,F,China,PM,Business,60%~70%,60%~70%,S0,Disagree,Agree,Disagree,Neither,Agree,Agree,Disagree,Disagree,Neither,Neither,Disagree,Agree
+107,21-25,F,China,PM,Business,60%~70%,60%~70%,S0,Disagree,Neither,Agree,Agree,Agree,Disagree,Disagree,Disagree,Agree,Agree,Neither,Agree
+108,21-25,F,China,PM,Business,60%~70%,50%~59%,S0,Neither,Disagree,Agree,Neither,Agree,Neither,Agree,Neither,Disagree,Agree,Agree,Agree
+109,21-25,F,China,PM,Business,40%~49%,,S0,Agree,Disagree,Agree,Disagree,Agree,Agree,Agree,Disagree,Neither,Strong Disagree,Neither,Agree
+110,21-25,F,China,PM,Business,60%~70%,60%~70%,S0,Neither,Disagree,Agree,Agree,Agree,Agree,Neither,Neither,Disagree,Agree,Neither,Disagree
+111,21-25,F,China,PM,Law/Legal studies,,,,Strong Disagree,Disagree,Disagree,Neither,Agree,Agree,Neither,Disagree,Disagree,Disagree,Neither,Disagree
+112,31-35,F,Korea,PM,Social Sciences and Humanities,,,,Strong Agree,Disagree,Neither,Agree,Neither,Strong Agree,Agree,Strong Disagree,Disagree,Disagree,Disagree,Strong Disagree
+113,>36,F,Colombia,IYO,Social Sciences and Humanities,40%~49%,40%~49%,S3,Neither,Neither,Neither,Neither,Neither,Neither,Neither,Neither,Neither,Neither,Neither,Neither
+114,21-25,F,China,PM,Business,50%~59%,60%~70%,S0,Disagree,Disagree,Agree,Disagree,Neither,Disagree,Disagree,Strong Disagree,Disagree,Agree,Disagree,Agree
+115,18-20,F,China,PM,Business,50%~59%,50%~59%,S0,Neither,Agree,Strong Agree,Neither,Agree,Strong Disagree,Disagree,Strong Disagree,Neither,Neither,Neither,Agree
+116,21-25,M,China,PM,Business,60%~70%,50%~59%,S1,Strong Disagree,Neither,Strong Agree,Agree,Neither,Disagree,Neither,Disagree,Disagree,Neither,Agree,Agree
+117,21-25,M,China,PM,Business,60%~70%,60%~70%,S0,Disagree,Agree,Agree,Neither,Agree,Neither,Neither,Disagree,Neither,Disagree,Agree,Neither
+118,21-25,M,China,PM,Business,60%~70%,50%~59%,S0,Disagree,Disagree,Agree,Agree,Agree,Agree,Neither,Strong Disagree,Agree,Agree,Strong Agree,Strong Agree
+119,21-25,F,China,PM,Business,50%~59%,60%~70%,S0,Disagree,Disagree,Agree,Neither,Agree,Agree,Agree,Disagree,Neither,Disagree,Neither,Agree
+120,21-25,M,China,PM,Business,50%~59%,40%~49%,S3,Neither,Neither,Disagree,Agree,Neither,Agree,Disagree,Neither,Neither,Strong Disagree,Disagree,Neither
+121,21-25,M,China,PM,Business,60%~70%,50%~59%,S1,Disagree,Disagree,Agree,Neither,Disagree,Disagree,Neither,Disagree,Disagree,Agree,Neither,Agree
+122,31-35,F,China,PM,Business,50%~59%,50%~59%,S1,Agree,Disagree,Neither,Agree,Neither,Strong Agree,Agree,Agree,Disagree,Agree,Strong Agree,Agree
+123,26-30,M,Gongo,PM,Business,>70%,60%~70%,S0,Strong Disagree,Neither,Neither,Neither,Neither,Neither,Neither,Strong Disagree,Disagree,Strong Agree,Disagree,Neither
+124,21-25,F,Ukraine,PM,Business,60%~70%,60%~70%,S1,Agree,Disagree,Disagree,Strong Agree,Disagree,Agree,Agree,Strong Disagree,Disagree,Strong Agree,Disagree,Disagree
+125,26-30,F,Korea,PM,Business,60%~70%,>70%,S0,Disagree,Strong Disagree,Agree,Agree,Agree,Strong Disagree,Disagree,Strong Disagree,Agree,Neither,Disagree,Strong Agree
