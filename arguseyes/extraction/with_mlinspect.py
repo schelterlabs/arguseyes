@@ -179,6 +179,7 @@ def _log_mlinspect_results(dag, dag_node_to_lineage_df):
             )
             mod_df = orig_df.drop(columns=['mlinspect_lineage'])
             mod_df['mlinspect_lineage'] = lineage_column
-            table = pa.Table.from_pandas(mod_df, preserve_index=True)
-            pq.write_table(table, temp_filename)
-            mlflow.log_artifact(temp_filename)
+            # Does not work for serialised arrays anymore for some reason...
+            #table = pa.Table.from_pandas(mod_df, preserve_index=True)
+            #pq.write_table(table, temp_filename)
+            #mlflow.log_artifact(temp_filename)
