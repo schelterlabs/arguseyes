@@ -1,4 +1,4 @@
-series: livedemo
+series: livedemo-indelab
 artifact_storage_uri: /Users/ssc/projects/arguseyes/mlruns/
 
 pipeline:
