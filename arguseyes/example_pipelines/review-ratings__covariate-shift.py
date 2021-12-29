@@ -1,13 +1,24 @@
 import pandas as pd
+import sys
 
-from sklearn.preprocessing import OneHotEncoder, label_binarize, StandardScaler
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
-from sklearn.linear_model import SGDClassifier
+from sklearn.linear_model import SGDRegressor
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.pipeline import Pipeline
 
 target_categories = ['Digital_Video_Games']
 split_date = '2015-07-31'
+start_date = '2015-01-01'
+
+if len(sys.argv) > 1:
+    target_categories = [sys.argv[1]]
+
+if len(sys.argv) > 2:
+    split_date = sys.argv[2]
+
+if len(sys.argv) > 3:
+    start_date = sys.argv[3]
 
 reviews = pd.read_csv('datasets/amazon-reviews/reviews.csv.gz', compression='gzip', index_col=0)
 products = pd.read_csv('datasets/amazon-reviews/products.csv', index_col=0)
@@ -16,7 +27,7 @@ ratings = pd.read_csv('datasets/amazon-reviews/ratings.csv', index_col=0)
 
 reviews = reviews[reviews.verified_purchase == 'Y']
 reviews = reviews[reviews.marketplace == 'US']
-reviews = reviews[reviews.review_date >= '2015-01-01']
+reviews = reviews[reviews.review_date >= start_date]
 
 reviews_with_ratings = reviews.merge(ratings, on='review_id')
 
@@ -43,15 +54,9 @@ train_data = reviews_with_products_and_ratings[reviews_with_products_and_ratings
 test_data = reviews_with_products_and_ratings[reviews_with_products_and_ratings.review_date > split_date]
 
 # Simulating a unit conversion error in the test data which introduces covariate shift
-test_data['star_rating'] = test_data['star_rating'] * 10.0
+test_data['helpful_votes'] = test_data['helpful_votes'] * 10.0
 
-train_data['is_helpful'] = train_data['helpful_votes'] > 0
-test_data['is_helpful'] = test_data['helpful_votes'] > 0
-
-train_labels = label_binarize(train_data['is_helpful'], classes=[True, False])
-test_labels = label_binarize(test_data['is_helpful'], classes=[True, False])
-
-numerical_attributes = ['star_rating']
+numerical_attributes = ['helpful_votes']
 categorical_attributes = ['vine', 'verified_purchase', 'category_id']
 
 feature_transformation = ColumnTransformer(transformers=[
@@ -62,10 +67,10 @@ feature_transformation = ColumnTransformer(transformers=[
 
 pipeline = Pipeline([
     ('features', feature_transformation),
-    ('learner', SGDClassifier(loss='log', penalty='l1', max_iter=1000))])
+    ('learner', SGDRegressor(loss='squared_loss', penalty='l1', max_iter=1000))])
 
-model = pipeline.fit(train_data, train_labels)
+model = pipeline.fit(train_data, train_data['star_rating'])
 
-score = model.score(test_data, test_labels)
+score = model.score(test_data, test_data['star_rating'])
 
-print(f'Accuracy on the test set: {score}')
+print(f'MSE on the test set: {score}')
