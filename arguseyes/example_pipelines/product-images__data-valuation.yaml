@@ -1,4 +1,4 @@
-series: yaml-sneakers-test
+series: product-images-data-valuation
 artifact_storage_uri: /Users/ssc/projects/arguseyes/mlruns/
 
 pipeline:

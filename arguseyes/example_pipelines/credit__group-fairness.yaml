@@ -1,4 +1,4 @@
-series: yaml-income-test
+series: credit-fairness
 artifact_storage_uri: /Users/ssc/projects/arguseyes/mlruns/
 
 pipeline:

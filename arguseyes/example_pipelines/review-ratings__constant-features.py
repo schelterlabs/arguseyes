@@ -1,9 +1,10 @@
 import pandas as pd
+import numpy as np
 import sys
 
-from sklearn.preprocessing import OneHotEncoder, FunctionTransformer
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
-from sklearn.linear_model import SGDRegressor
+from sklearn.linear_model import SGDClassifier
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.pipeline import Pipeline
 
@@ -52,22 +53,23 @@ reviews_with_products_and_ratings['title_and_review_text'] = \
 
 train_data = reviews_with_products_and_ratings[reviews_with_products_and_ratings.review_date <= split_date]
 test_data = reviews_with_products_and_ratings[reviews_with_products_and_ratings.review_date > split_date]
+train_targets = np.array(train_data['star_rating'])
+test_targets = np.array(test_data['star_rating'])
 
 numerical_attributes = ['helpful_votes']
 categorical_attributes = ['vine', 'verified_purchase', 'category_id']
 
 feature_transformation = ColumnTransformer(transformers=[
-    ('numerical_features', FunctionTransformer(lambda x: x), numerical_attributes),
+    ('numerical_features', StandardScaler(), numerical_attributes),
     ('categorical_features', OneHotEncoder(handle_unknown='ignore'), categorical_attributes),
     ('textual_features', HashingVectorizer(ngram_range=(1, 3), n_features=100), 'title_and_review_text')
 ])
 
 pipeline = Pipeline([
     ('features', feature_transformation),
-    ('learner', SGDRegressor(loss='squared_loss', penalty='l1', max_iter=1000))])
+    ('learner', SGDClassifier(loss='squared_loss', penalty='l1', max_iter=1000))])
 
-model = pipeline.fit(train_data, train_data['star_rating'])
-
-score = model.score(test_data, test_data['star_rating'])
+model = pipeline.fit(train_data, train_targets)
+score = model.score(test_data, test_targets)
 
 print(f'MSE on the test set: {score}')

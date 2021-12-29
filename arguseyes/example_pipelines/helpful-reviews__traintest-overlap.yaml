@@ -1,4 +1,4 @@
-series: demo-amazonreviews-traintestoverlap
+series: helpful-reviews-traintest-overlap
 artifact_storage_uri: /Users/ssc/projects/arguseyes/mlruns/
 
 pipeline:

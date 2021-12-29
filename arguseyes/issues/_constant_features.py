@@ -3,6 +3,7 @@ import numpy as np
 from arguseyes.issues import IssueDetector, Issue
 from arguseyes.templates import Output
 
+
 class ConstantFeatures(IssueDetector):
 
     @staticmethod
@@ -12,12 +13,10 @@ class ConstantFeatures(IssueDetector):
 
     def error_msg(self, issue) -> str:
         num_constant_features = len(issue.details['constant_feature_indices'])
-        return f'Encountered {num_constant_features} constant feature(s)!'
+        return f'Encountered {num_constant_features} constant feature(s) ' \
+               f'at indices {issue.details["constant_feature_indices"]}!'
 
     def _detect(self, pipeline) -> Issue:
-
-        #from pprint import pprint   
-        #pprint(vars(pipeline))
 
         X_train = pipeline.outputs[Output.X_TRAIN]
         _, num_columns = X_train.shape

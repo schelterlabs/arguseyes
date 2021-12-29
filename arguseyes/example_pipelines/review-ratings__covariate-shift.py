@@ -1,9 +1,10 @@
 import pandas as pd
+import numpy as np
 import sys
 
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
-from sklearn.linear_model import SGDRegressor
+from sklearn.linear_model import SGDClassifier
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.pipeline import Pipeline
 
@@ -53,8 +54,13 @@ reviews_with_products_and_ratings['title_and_review_text'] = \
 train_data = reviews_with_products_and_ratings[reviews_with_products_and_ratings.review_date <= split_date]
 test_data = reviews_with_products_and_ratings[reviews_with_products_and_ratings.review_date > split_date]
 
-# Simulating a unit conversion error in the test data which introduces covariate shift
-test_data['helpful_votes'] = test_data['helpful_votes'] * 10.0
+train_targets = np.array(train_data['star_rating'])
+test_targets = np.array(test_data['star_rating'])
+
+# Simulating a conversion error in the test data which introduces covariate shift
+test_data['helpful_votes'] = test_data['helpful_votes'] + 100
+
+
 
 numerical_attributes = ['helpful_votes']
 categorical_attributes = ['vine', 'verified_purchase', 'category_id']
@@ -67,10 +73,9 @@ feature_transformation = ColumnTransformer(transformers=[
 
 pipeline = Pipeline([
     ('features', feature_transformation),
-    ('learner', SGDRegressor(loss='squared_loss', penalty='l1', max_iter=1000))])
+    ('learner', SGDClassifier(loss='squared_loss', penalty='l1', max_iter=1000))])
 
-model = pipeline.fit(train_data, train_data['star_rating'])
-
-score = model.score(test_data, test_data['star_rating'])
+model = pipeline.fit(train_data, train_targets)
+score = model.score(test_data, test_targets)
 
 print(f'MSE on the test set: {score}')
