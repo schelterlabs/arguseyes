@@ -8,6 +8,7 @@ from networkx.readwrite.gpickle import read_gpickle, write_gpickle
 import pandas as pd
 import logging
 
+import numpy as np
 import pyarrow as pa
 import pyarrow.parquet as pq
 
@@ -179,6 +180,10 @@ def _log_mlinspect_results(dag, dag_node_to_lineage_df):
             )
             mod_df = orig_df.drop(columns=['mlinspect_lineage'])
             mod_df['mlinspect_lineage'] = lineage_column
+            if 'array' in mod_df:
+                mod_df['array'] = mod_df['array'].map(
+                    lambda arr: arr.tolist() if isinstance(arr, np.ndarray) else arr
+                )
             table = pa.Table.from_pandas(mod_df, preserve_index=True)
             pq.write_table(table, temp_filename)
             mlflow.log_artifact(temp_filename)
