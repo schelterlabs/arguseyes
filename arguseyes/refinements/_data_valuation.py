@@ -42,7 +42,7 @@ class DataValuation(Refinement):
         X_train = pipeline.outputs[Output.X_TRAIN]
         X_test = pipeline.outputs[Output.X_TEST]
         y_train = pipeline.outputs[Output.Y_TRAIN]
-        y_test = pipeline.outputs[Output.Y_TRAIN]
+        y_test = pipeline.outputs[Output.Y_TEST]
 
         X_test_sampled = X_test[:self.num_test_samples, :]
         y_test_sampled = y_test[:self.num_test_samples, :]
