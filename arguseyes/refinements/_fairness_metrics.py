@@ -87,7 +87,11 @@ class FairnessMetrics(Refinement):
         self.log_metric(f'{identifier_non_protected}.false_negative_rate', non_protected_fnr)
         self.log_metric(f'{identifier_protected}.false_negative_rate', protected_fnr)
 
-        # TODO compute more metrics
+        return non_protected_true_negatives, non_protected_false_positives, non_protected_false_negatives, \
+               non_protected_true_positives, protected_true_negatives, protected_false_positives, \
+               protected_false_negatives, protected_true_positives
+
+
 
     def _group_membership_in_test_source(self, fact_table_source, fact_table_lineage):
         is_in_non_protected_by_row_id = {}

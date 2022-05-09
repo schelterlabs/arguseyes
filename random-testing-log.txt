@@ -1,0 +1,60 @@
+MANUAL, seed=1234, # ratings used 23440, # products used 3088, eq_opp 0.0337270493512396
+AUTO, seed=1234, # ratings used 23440, # products used 3088, eq_opp 0.0337270493512396
+COMPARISON: True, True, True
+MANUAL, seed=830848, # ratings used 38469, # products used 4328, eq_opp 0.016491953858055915
+AUTO, seed=830848, # ratings used 38469, # products used 4328, eq_opp 0.016491953858055915
+COMPARISON: True, True, True
+MANUAL, seed=987496, # ratings used 53348, # products used 5363, eq_opp 0.08868045511270775
+AUTO, seed=987496, # ratings used 53348, # products used 5363, eq_opp 0.08868045511270775
+COMPARISON: True, True, True
+MANUAL, seed=429214, # ratings used 52682, # products used 5163, eq_opp 0.03349212213012516
+AUTO, seed=429214, # ratings used 52682, # products used 5163, eq_opp 0.03349212213012516
+COMPARISON: True, True, True
+MANUAL, seed=178132, # ratings used 46302, # products used 4767, eq_opp 0.01687087996529958
+AUTO, seed=178132, # ratings used 46302, # products used 4767, eq_opp 0.01687087996529958
+COMPARISON: True, True, True
+MANUAL, seed=590519, # ratings used 46195, # products used 4828, eq_opp 0.009915505336355004
+AUTO, seed=590519, # ratings used 46195, # products used 4828, eq_opp 0.009915505336355004
+COMPARISON: True, True, True
+MANUAL, seed=725202, # ratings used 38919, # products used 4349, eq_opp 0.05140616578732486
+AUTO, seed=725202, # ratings used 38919, # products used 4349, eq_opp 0.05140616578732486
+COMPARISON: True, True, True
+MANUAL, seed=476388, # ratings used 52053, # products used 5115, eq_opp 0.023852718510224802
+AUTO, seed=476388, # ratings used 52053, # products used 5115, eq_opp 0.023852718510224802
+COMPARISON: True, True, True
+MANUAL, seed=133576, # ratings used 37005, # products used 4144, eq_opp 0.0022593447759845786
+AUTO, seed=133576, # ratings used 37005, # products used 4144, eq_opp 0.0022593447759845786
+COMPARISON: True, True, True
+MANUAL, seed=515078, # ratings used 13108, # products used 932, eq_opp 0.0754028140579928
+AUTO, seed=515078, # ratings used 13108, # products used 932, eq_opp 0.0754028140579928
+COMPARISON: True, True, True
+MANUAL, seed=720668, # ratings used 42538, # products used 4578, eq_opp 0.03694142312583442
+AUTO, seed=720668, # ratings used 42538, # products used 4578, eq_opp 0.03694142312583442
+COMPARISON: True, True, True
+MANUAL, seed=449660, # ratings used 33717, # products used 3893, eq_opp 0.058615981019790445
+AUTO, seed=449660, # ratings used 33717, # products used 3893, eq_opp 0.058615981019790445
+COMPARISON: True, True, True
+MANUAL, seed=168556, # ratings used 40606, # products used 4395, eq_opp 0.04413710315692138
+AUTO, seed=168556, # ratings used 40606, # products used 4395, eq_opp 0.04413710315692138
+COMPARISON: True, True, True
+MANUAL, seed=74155, # ratings used 48931, # products used 4866, eq_opp 0.06607918713659174
+AUTO, seed=74155, # ratings used 48931, # products used 4866, eq_opp 0.06607918713659174
+COMPARISON: True, True, True
+MANUAL, seed=164680, # ratings used 35824, # products used 4173, eq_opp 0.022701534853691106
+AUTO, seed=164680, # ratings used 35824, # products used 4173, eq_opp 0.022701534853691106
+COMPARISON: True, True, True
+MANUAL, seed=142209, # ratings used 21282, # products used 3013, eq_opp 0.0409710072401908
+AUTO, seed=142209, # ratings used 21282, # products used 3013, eq_opp 0.0409710072401908
+COMPARISON: True, True, True
+MANUAL, seed=181459, # ratings used 43872, # products used 4528, eq_opp 0.041472609105656526
+AUTO, seed=181459, # ratings used 43872, # products used 4528, eq_opp 0.041472609105656526
+COMPARISON: True, True, True
+MANUAL, seed=994015, # ratings used 30876, # products used 3777, eq_opp 0.02723642435095551
+AUTO, seed=994015, # ratings used 30876, # products used 3777, eq_opp 0.02723642435095551
+COMPARISON: True, True, True
+MANUAL, seed=172466, # ratings used 48801, # products used 4858, eq_opp 0.03685799224782671
+AUTO, seed=172466, # ratings used 48801, # products used 4858, eq_opp 0.03685799224782671
+COMPARISON: True, True, True
+MANUAL, seed=529630, # ratings used 29738, # products used 3688, eq_opp 0.01282589660341013
+AUTO, seed=529630, # ratings used 29738, # products used 3688, eq_opp 0.01282589660341013
+COMPARISON: True, True, True

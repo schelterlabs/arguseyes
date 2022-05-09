@@ -81,7 +81,7 @@ def _execute_pipeline(inspector: PipelineInspector):
         for node, node_results in result.dag_node_to_inspection_results.items()
     }    
 
-    return _from_dag_and_lineage(result.dag, dag_node_to_lineage_df)
+    return _from_dag_and_lineage(result.dag, dag_node_to_lineage_df, log_results=False)
 
 
 
@@ -120,6 +120,8 @@ def _from_dag_and_lineage(dag, dag_node_to_lineage_df, log_results=True):
 
     if log_results:
         _log_mlinspect_results(dag, dag_node_to_lineage_df)
+    else:
+        logging.info(f'Skipping result logging')
 
     return ClassificationPipeline(train_sources, train_source_lineage, test_sources, test_source_lineage,
                                   outputs, output_lineage)

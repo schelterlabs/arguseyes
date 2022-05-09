@@ -1,5 +1,6 @@
 from mlinspect.inspections._inspection_input import OperatorType
 
+import logging
 
 def _sources_with_one_to_one_correspondence_to_feature_vectors(feature_matrix_lineage_per_row):
     rows_from_operator = {}
@@ -13,9 +14,13 @@ def _sources_with_one_to_one_correspondence_to_feature_vectors(feature_matrix_li
                     rows_from_operator[entry.operator_id] = set()
 
                 if entry.row_id in rows_from_operator[entry.operator_id]:
+                    logging.info(f'Duplicate row {entry.row_id} found for operator {entry.operator_id} in polynomial {polynomial}')
                     operators_with_duplicates.add(entry.operator_id)
                 else:
                     rows_from_operator[entry.operator_id].add(entry.row_id)
+
+    logging.info(f'rows_from_operator.keys() {rows_from_operator.keys()}')
+    logging.info(f'operators_with_duplicates {operators_with_duplicates}')
 
     return set(rows_from_operator.keys()).difference(operators_with_duplicates)
 
@@ -64,6 +69,8 @@ def determine_fact_table_source_id(raw_sources, data_op, dag_node_to_lineage_df)
     feature_matrix_lineage = dag_node_to_lineage_df[data_op]
     feature_matrix_lineage_per_row = list(feature_matrix_lineage['mlinspect_lineage'])
     sources_one_to_one = _sources_with_one_to_one_correspondence_to_feature_vectors(feature_matrix_lineage_per_row)
+
+    logging.info(f'sources_one_to_one {len(sources_one_to_one)}')
 
     if len(sources_one_to_one) == 1:
         return list(sources_one_to_one)[0]
