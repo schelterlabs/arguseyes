@@ -1,5 +1,3 @@
-import numpy as np
-
 from arguseyes.refinements import Refinement
 from arguseyes.templates import SourceType, Output
 

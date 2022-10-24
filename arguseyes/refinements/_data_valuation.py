@@ -4,6 +4,7 @@ from numba import njit, prange
 from arguseyes.refinements import Refinement
 from arguseyes.templates import SourceType, Source, Output
 
+
 # removed cache=True because of https://github.com/numba/numba/issues/4908 need a workaround soon
 @njit(fastmath=True, parallel=True)
 def _compute_shapley_values(X_train, y_train, X_test, y_test, K=1):
