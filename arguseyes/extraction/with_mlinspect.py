@@ -11,6 +11,8 @@ import logging
 import pyarrow as pa
 import pyarrow.parquet as pq
 
+import numpy as np
+
 from mlinspect import PipelineInspector
 from mlinspect.inspections import ArgumentCapturing
 from mlinspect.inspections._lineage import RowLineage, LineageId
@@ -21,6 +23,7 @@ from arguseyes.templates.classification import ClassificationPipeline
 from arguseyes.extraction import feature_matrix_extractor, source_extractor
 from arguseyes.templates import Output, SourceType, Source
 
+
 def from_py_file(path_to_py_file, cmd_args=[]):
     synthetic_cmd_args = ['eyes']
     synthetic_cmd_args.extend(cmd_args)
@@ -29,6 +32,7 @@ def from_py_file(path_to_py_file, cmd_args=[]):
     logging.info(f'Patching sys.argv with {synthetic_cmd_args}')
     with patch.object(sys, 'argv', synthetic_cmd_args):
         return _execute_pipeline(PipelineInspector.on_pipeline_from_py_file(path_to_py_file))
+
 
 def from_notebook(path_to_ipynb_file):
     return _execute_pipeline(
@@ -73,9 +77,6 @@ def _execute_pipeline(inspector: PipelineInspector):
                              args)
 
     dag_node_to_lineage_df = {
-        # node: df
-        # for node, lineage_map in result.dag_node_to_inspection_results.items()
-        # for df in lineage_map.values()
         node: node_results[lineage_inspection]
         for node, node_results in result.dag_node_to_inspection_results.items()
     }    
@@ -179,6 +180,24 @@ def _log_mlinspect_results(dag, dag_node_to_lineage_df):
             )
             mod_df = orig_df.drop(columns=['mlinspect_lineage'])
             mod_df['mlinspect_lineage'] = lineage_column
+
+            # Hacky workaround, as pyarrow has insufficient array support at the moment
+            if "image" in mod_df.columns:
+                serialized_image_column = orig_df['image'].map(
+                    #lambda arr: ':'.join([str(value) for value in np.ravel(arr)])
+                        lambda arr: np.ravel(arr)
+                )
+                mod_df = mod_df.drop(columns=['image'])
+                mod_df['image'] = serialized_image_column
+
+            # Hacky workaround, as pyarrow has insufficient array support at the moment
+            if "array" in mod_df.columns:
+                array_column = orig_df['array'].map(
+                    lambda arr: np.ravel(arr)
+                )
+                mod_df = mod_df.drop(columns=['array'])
+                mod_df['array'] = array_column
+
             table = pa.Table.from_pandas(mod_df, preserve_index=True)
             pq.write_table(table, temp_filename)
             mlflow.log_artifact(temp_filename)

@@ -1,0 +1,9 @@
+workclass_id,workclass
+0,Federal-gov
+1,Local-gov
+2,Never-worked
+3,Private
+4,Self-emp-inc
+5,Self-emp-not-inc
+6,State-gov
+7,Without-pay
