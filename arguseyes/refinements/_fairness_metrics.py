@@ -8,16 +8,48 @@ class FairnessMetrics(Refinement):
         self.sensitive_attribute = sensitive_attribute
         self.non_protected_class = non_protected_class
 
-    # TODO this assumes binary classification and currently only works attributes of the FACT table
-    # TODO this needs some refactoring
+    # TODO this assumes binary classification
     def _compute(self, pipeline):
-        fact_table_index, fact_table_source = [(index, test_source) for index, test_source in enumerate(pipeline.test_sources)
-                                               if test_source.source_type == SourceType.ENTITIES][0]
+        fact_table_index, fact_table_source = [
+            (index, test_source) for index, test_source in enumerate(pipeline.test_sources)
+            if test_source.source_type == SourceType.ENTITIES][0]
 
-        fact_table_lineage = pipeline.test_source_lineage[fact_table_index]    
+        fact_table_lineage = pipeline.test_source_lineage[fact_table_index]
 
         # Compute group membership per tuple in the test source data
-        is_in_non_protected_by_row_id = self._group_membership_in_test_source(fact_table_source, fact_table_lineage)
+        if self.sensitive_attribute in fact_table_source.data.columns:
+            is_in_non_protected_by_row_id = \
+                self._group_membership_from_fact_table(fact_table_source, fact_table_lineage)
+        # Compute group membership over a join
+        else:
+            side_source = None
+            side_source_index = None
+
+            for index, test_source in enumerate(pipeline.test_sources):
+                if test_source.source_type == SourceType.SIDE_DATA:
+                    if self.sensitive_attribute in test_source.data.columns:
+                        side_source = test_source
+                        side_source_index = index
+                        break
+
+            if side_source is None:
+                raise ValueError(f"Cannot find sensitive attribute {self.sensitive_attribute} in test sources.")
+
+            side_source_lineage = pipeline.test_source_lineage[side_source_index]
+
+            non_protected_id = None
+            for polynomial, value in zip(side_source_lineage, list(side_source.data[self.sensitive_attribute])):
+                if value == self.non_protected_class:
+                    non_protected_id = list(polynomial)[0]
+                    break
+
+            if non_protected_id is None:
+                raise ValueError(f"Cannot find non-protected class {self.non_protected_class} for "
+                                 f"sensitive attribute {self.sensitive_attribute} in test sources.")
+
+            lineage_x_test = pipeline.output_lineage[Output.X_TEST]
+            is_in_non_protected_by_row_id = \
+                self._group_membership_from_side_table(fact_table_source.operator_id, lineage_x_test, non_protected_id)
 
         y_pred = pipeline.outputs[Output.Y_PRED]
         lineage_y_pred = pipeline.output_lineage[Output.Y_PRED]
@@ -87,11 +119,20 @@ class FairnessMetrics(Refinement):
 
         # TODO compute more metrics
 
-    def _group_membership_in_test_source(self, fact_table_source, fact_table_lineage):
+    def _group_membership_from_fact_table(self, fact_table_source, fact_table_lineage):
         is_in_non_protected_by_row_id = {}
         for index, row in fact_table_source.data.iterrows():
-            is_in_majority = row[self.sensitive_attribute] == self.non_protected_class
+            is_in_non_protected = row[self.sensitive_attribute] == self.non_protected_class
             polynomial = fact_table_lineage[index]
             row_id = list(polynomial)[0].row_id
-            is_in_non_protected_by_row_id[row_id] = is_in_majority
+            is_in_non_protected_by_row_id[row_id] = is_in_non_protected
+        return is_in_non_protected_by_row_id
+
+
+    def _group_membership_from_side_table(self, fact_table_operator_id, lineage_x_test, non_protected_id):
+        is_in_non_protected_by_row_id = {}
+        for polynomial_of_row in lineage_x_test:
+            is_in_non_protected = non_protected_id in polynomial_of_row
+            row_id = [entry for entry in polynomial_of_row if entry.operator_id == fact_table_operator_id][0].row_id
+            is_in_non_protected_by_row_id[row_id] = is_in_non_protected
         return is_in_non_protected_by_row_id

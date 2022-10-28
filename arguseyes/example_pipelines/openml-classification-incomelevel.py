@@ -61,7 +61,7 @@ def openmlflow(numerical_columns, categorical_columns):
 
 data_location = 'datasets/income/'
 
-government_employed = ['Federal-gov', 'State-gov', 'Local-gov']
+government_employed = ['Private']
 
 train, test = load_train_and_test_data(data_location, employment_types=government_employed)
 

@@ -5,7 +5,6 @@ from tensorflow.python.keras.wrappers.scikit_learn import KerasClassifier
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Dropout, Flatten
 from tensorflow.keras.models import Sequential
 
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import FunctionTransformer, label_binarize
 from sklearn.pipeline import Pipeline
 
@@ -44,29 +43,38 @@ def create_cnn():
     return model
 
 
-data_location = 'datasets/sneakers/'
+data_location = 'datasets/sneakers'
 
-train_data = pd.read_csv(f'{data_location}/product_images.csv', converters={'image': decode_image})
+train_data = pd.read_csv(f'{data_location}/product_images_train_with_labelerrors.csv',
+                         converters={'image': decode_image})
+test_data = pd.read_csv(f'{data_location}/product_images_test.csv',
+                         converters={'image': decode_image})
 
 product_categories = pd.read_csv(f'{data_location}/product_categories.csv')
-with_categories = train_data.merge(product_categories, on='category_id')
+train_data_with_categories = train_data.merge(product_categories, on='category_id')
+test_data_with_categories = test_data.merge(product_categories, on='category_id')
 
 categories_to_distinguish = ['Sneaker', 'Ankle boot']
 
-images_of_interest = with_categories[with_categories['category_name'].isin(categories_to_distinguish)]
+train_images = train_data_with_categories[train_data_with_categories['category_name']\
+    .isin(categories_to_distinguish)]
 
-train, test = train_test_split(images_of_interest, test_size=0.2, random_state=1337)
+test_images = test_data_with_categories[test_data_with_categories['category_name']\
+    .isin(categories_to_distinguish)]
 
-y_train = label_binarize(train['category_name'], classes=categories_to_distinguish)
-y_test = label_binarize(test['category_name'], classes=categories_to_distinguish)
+
+y_train = label_binarize(train_images['category_name'], classes=categories_to_distinguish)
+y_test = label_binarize(test_images['category_name'], classes=categories_to_distinguish)
+
+print(len(y_test))
 
 pipeline = Pipeline(steps=[
     ('normalisation', FunctionTransformer(normalise_image)),
     ('reshaping', FunctionTransformer(reshape_images)),
-    ('model', KerasClassifier(create_cnn))
+    ('model', KerasClassifier(create_cnn, epochs=10))
 ])
 
 
-model = pipeline.fit(train[['image']], y_train)
+model = pipeline.fit(train_images[['image']], y_train)
 
-model.score(test[['image']], y_test)
+model.score(test_images[['image']], y_test)

@@ -41,9 +41,15 @@ class DataValuation(Refinement):
 
     def _compute(self, pipeline):
         X_train = pipeline.outputs[Output.X_TRAIN]
-        X_test = pipeline.outputs[Output.X_TEST]
         y_train = pipeline.outputs[Output.Y_TRAIN]
-        y_test = pipeline.outputs[Output.Y_TRAIN]
+
+        X_test = pipeline.outputs[Output.X_TEST]
+        y_test = pipeline.outputs[Output.Y_TEST]
+
+        # Still hacky, we need a principled way to flatten tensors for CV pipelines
+        if len(X_train.shape) == 3:
+            X_train = X_train.reshape(int(X_train.shape[0] / X_train.shape[1]), X_train.shape[1] * X_train.shape[1])
+            X_test = X_test.reshape(int(X_test.shape[0] / X_test.shape[1]), X_test.shape[1] * X_test.shape[1])
 
         X_test_sampled = X_test[:self.num_test_samples, :]
         y_test_sampled = y_test[:self.num_test_samples, :]
@@ -53,10 +59,11 @@ class DataValuation(Refinement):
                                                  X_test_sampled,
                                                  np.squeeze(y_test_sampled), self.k)
 
-        lineage_X_train = pipeline.output_lineage[Output.X_TRAIN]    
+        lineage_X_train = pipeline.output_lineage[Output.X_TRAIN]
 
-        fact_table_index, fact_table_source = [(index, test_source) for index, test_source in enumerate(pipeline.test_sources)
-                                               if test_source.source_type == SourceType.ENTITIES][0]
+        fact_table_index, fact_table_source = \
+            [(index, train_source) for index, train_source in enumerate(pipeline.train_sources)
+             if train_source.source_type == SourceType.ENTITIES][0]
 
         shapley_values_by_row_id = {}
 
@@ -66,7 +73,7 @@ class DataValuation(Refinement):
                     shapley_values_by_row_id[entry.row_id] = shapley_value
 
         data = fact_table_source.data
-        fact_table_lineage = pipeline.test_source_lineage[fact_table_index]
+        fact_table_lineage = pipeline.train_source_lineage[fact_table_index]
 
         for row_index, row in data.iterrows():                
             data.at[row_index, '__arguseyes__shapley_value'] = \

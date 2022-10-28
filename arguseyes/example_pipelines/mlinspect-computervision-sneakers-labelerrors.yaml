@@ -10,5 +10,5 @@ pipeline:
     - refinement:
         name: data_valuation
         params:
-          k: 10
-          num_test_samples: 100
+          k: 100
+          num_test_samples: 200
