@@ -3,10 +3,11 @@ import logging
 
 from typing import Dict, Any
 import pandas as pd
-from pandas import DataFrame, Series
+from pandas import DataFrame
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, FunctionTransformer
+
 _logger = logging.getLogger(__name__)
 pd.options.mode.chained_assignment = None
 
@@ -66,8 +67,8 @@ filtered_data = filter_dataset(data)
 
 temporal_split_date = '2016-02-15'
 
-train_data = filtered_data[filtered_data.tpep_dropoff_datetime <= temporal_split_date]
-test_data = filtered_data[filtered_data.tpep_dropoff_datetime >= temporal_split_date]
+train_data = filtered_data[filtered_data['tpep_dropoff_datetime'] <= temporal_split_date]
+test_data = filtered_data[filtered_data['tpep_dropoff_datetime'] >= temporal_split_date]
 
 
 model = Pipeline([
