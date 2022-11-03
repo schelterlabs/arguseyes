@@ -6,14 +6,14 @@ pipeline:
   path: /Users/ssc/projects/arguseyes/arguseyes/example_pipelines/openml-classification-incomelevel.py
   working_directory: /Users/ssc/projects/arguseyes/arguseyes/example_pipelines/
   detect_issues:
-  data-refinements:
-    - refinement:
+  analyses:
+    - analysis:
         name: fairness_metrics
         params:
           sensitive_attribute: sex
-          non_protected_class: Male
-    - refinement:
+          privileged_class: Male
+    - analysis:
         name: fairness_metrics
         params:
           sensitive_attribute: race
-          non_protected_class: White
+          privileged_class: White

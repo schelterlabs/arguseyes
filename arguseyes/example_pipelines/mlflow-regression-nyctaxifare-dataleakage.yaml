@@ -2,8 +2,7 @@ series: development
 artifact_storage_uri: /Users/ssc/projects/arguseyes/mlruns/
 
 pipeline:
-  template: classification
   path: /Users/ssc/projects/arguseyes/arguseyes/example_pipelines/mlflow-regression-nyctaxifare.py
-  working_directory: /Users/ssc/projects/arguseyes/arguseyes/example_pipelines/
+  template: classification
   detect_issues:
-     - traintest_overlap
+     - data_leakage

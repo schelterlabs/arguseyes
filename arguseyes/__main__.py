@@ -3,7 +3,6 @@ import os
 import sys
 import yaml
 import logging
-import mlflow
 
 from arguseyes import ArgusEyes
 from arguseyes.issues import *
@@ -26,10 +25,6 @@ def main(yaml_file):
     pipeline_config = config['pipeline']
     issues_to_detect = pipeline_config['detect_issues']
 
-    working_directory = pipeline_config['working_directory']
-    logging.info(f'Changing to directory {working_directory}...')
-    os.chdir(working_directory)
-
     synthetic_cmd_args = []
 
     if 'args' in pipeline_config:
@@ -40,12 +35,16 @@ def main(yaml_file):
     mlflow_artifact_storage_uri = config['artifact_storage_uri']
     pipeline_path = pipeline_config['path']
 
+    working_directory = os.path.dirname(pipeline_path)
+    logging.info(f'Changing to directory {working_directory}...')
+    os.chdir(working_directory)
+
     issues_by_name = {
         'constant_features': ConstantFeatures(),
         'unnormalised_features': UnnormalisedFeatures(),
         'label_shift': LabelShift(),
         'covariate_shift': CovariateShift(),
-        'traintest_overlap': TrainTestOverlap()
+        'data_leakage': DataLeakage()
     }
 
     logging.info(f'Storing artifacts via mlflow at {mlflow_artifact_storage_uri}...')
@@ -72,28 +71,26 @@ def main(yaml_file):
                         '-' * 80 + '\n\x1b[0m')
                     issue_detected = True
 
-        if 'data-refinements' in pipeline_config:
-            for refinement in pipeline_config['data-refinements']:
-                refinement_info = refinement['refinement']
+        if 'analyses' in pipeline_config:
+            for refinement in pipeline_config['analyses']:
+                refinement_info = refinement['analysis']
                 if refinement_info['name'] == 'input_usage':
                     logging.info('Computing usage information for input records')
                     pipeline.compute(InputUsage())
-                if refinement_info['name'] == 'data_valuation':
+                if refinement_info['name'] == 'shapley_values':
                     if 'params' in refinement_info:
                         k = refinement_info['params']['k']
-                        num_test_samples = refinement_info['params']['num_test_samples']
-                        logging.info(f'Computing data valuation information for input records with k={k}' +
-                                    f' and {num_test_samples} test samples')
-                        pipeline.compute(DataValuation(k, num_test_samples))
+                        logging.info(f'Computing Shapley values for input records with k={k}')
+                        pipeline.compute(ShapleyValues(k))
                     else:
-                        logging.info('Computing data valuation information for input records')
-                        pipeline.compute(DataValuation())
+                        logging.info('Computing Shapley values for input records')
+                        pipeline.compute(ShapleyValues())
                 if refinement_info['name'] == 'fairness_metrics':
                     sensitive_attribute = refinement_info['params']['sensitive_attribute']
-                    non_protected_class = refinement_info['params']['non_protected_class']
+                    privileged_class = refinement_info['params']['privileged_class']
                     logging.info(f'Computing fairness metrics with {sensitive_attribute} as sensitive attribute' +
-                                f' and {non_protected_class} as non-protected class')
-                    pipeline.compute(FairnessMetrics(sensitive_attribute, non_protected_class))
+                                f' and {privileged_class} as privileged class')
+                    pipeline.compute(FairnessMetrics(sensitive_attribute, privileged_class))
 
     if issue_detected:
         logging.error(

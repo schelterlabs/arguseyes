@@ -6,6 +6,7 @@ import tempfile
 import pyarrow as pa
 import pyarrow.parquet as pq
 
+
 class Refinement(ABC):
     @abstractmethod
     def _compute(self, pipeline):

@@ -1,7 +1,8 @@
 from arguseyes.issues import Issue, IssueDetector
 from arguseyes.templates import Output
 
-class TrainTestOverlap(IssueDetector):
+
+class DataLeakage(IssueDetector):
 
     def _detect(self, pipeline) -> Issue:
 

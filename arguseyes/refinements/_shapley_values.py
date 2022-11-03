@@ -33,11 +33,10 @@ def _compute_shapley_values(X_train, y_train, X_test, y_test, K=1):
     return result
 
 
-class DataValuation(Refinement):
+class ShapleyValues(Refinement):
 
-    def __init__(self, k=1, num_test_samples=10):
+    def __init__(self, k=1):
         self.k = k
-        self.num_test_samples = num_test_samples
 
     def _compute(self, pipeline):
         X_train = pipeline.outputs[Output.X_TRAIN]
@@ -51,13 +50,11 @@ class DataValuation(Refinement):
             X_train = X_train.reshape(int(X_train.shape[0] / X_train.shape[1]), X_train.shape[1] * X_train.shape[1])
             X_test = X_test.reshape(int(X_test.shape[0] / X_test.shape[1]), X_test.shape[1] * X_test.shape[1])
 
-        X_test_sampled = X_test[:self.num_test_samples, :]
-        y_test_sampled = y_test[:self.num_test_samples, :]
-
         shapley_values = _compute_shapley_values(X_train,
                                                  np.squeeze(y_train),
-                                                 X_test_sampled,
-                                                 np.squeeze(y_test_sampled), self.k)
+                                                 X_test,
+                                                 np.squeeze(y_test),
+                                                 self.k)
 
         lineage_X_train = pipeline.output_lineage[Output.X_TRAIN]
 
@@ -76,13 +73,12 @@ class DataValuation(Refinement):
         fact_table_lineage = pipeline.train_source_lineage[fact_table_index]
 
         for row_index, row in data.iterrows():                
-            data.at[row_index, '__arguseyes__shapley_value'] = \
+            data.at[row_index, '__shapley_value'] = \
                 self._find_shapley(fact_table_lineage[row_index], shapley_values_by_row_id)
 
-        self.log_tag('arguseyes.data_valuation.operator_id', fact_table_source.operator_id)
-        self.log_tag('arguseyes.data_valuation.k', self.k)
-        self.log_tag('arguseyes.data_valuation.num_test_samples', self.num_test_samples)
-        self.log_tag('arguseyes.data_valuation.data_file', 'input-with-shapley-values.parquet')
+        self.log_tag('arguseyes.shapley_values.operator_id', fact_table_source.operator_id)
+        self.log_tag('arguseyes.shapley_values.k', self.k)
+        self.log_tag('arguseyes.shapley_values.data_file', 'input-with-shapley-values.parquet')
         self.log_as_parquet_file(data, 'input-with-shapley-values.parquet')
 
         return Source(fact_table_source.operator_id, fact_table_source.source_type, data)

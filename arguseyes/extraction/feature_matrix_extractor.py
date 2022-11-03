@@ -26,6 +26,12 @@ def extract_predicted_labels(dag_node_to_lineage_df):
 
 def _extract(operator_type, dag_node_to_lineage_df):
     data_op = find_dag_node_by_type(operator_type, dag_node_to_lineage_df.keys())
-    matrix = np.vstack(dag_node_to_lineage_df[data_op]['array'].values)
-    lineage = list(dag_node_to_lineage_df[data_op]['mlinspect_lineage'])
+    captured_intermediate = dag_node_to_lineage_df[data_op]
+
+    columns = [column for column in captured_intermediate.columns if column != 'mlinspect_lineage']
+    # There should only be one column, either 'array' for numpy arrays, or a named column for dataframe inputs
+    column_of_interest = columns[0]
+
+    matrix = np.vstack(captured_intermediate[column_of_interest].values)
+    lineage = list(captured_intermediate['mlinspect_lineage'])
     return matrix, lineage

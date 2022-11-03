@@ -7,8 +7,6 @@ from pandas import DataFrame, Series
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, FunctionTransformer
-#from sklearn.metrics import mean_squared_error
-
 _logger = logging.getLogger(__name__)
 pd.options.mode.chained_assignment = None
 
@@ -24,13 +22,13 @@ def load_file_as_dataframe(file_path: str, file_format: str) -> DataFrame:
         raise NotImplementedError
 
 
-def create_dataset_filter(dataset: DataFrame) -> Series(bool):
-    return (
-        (dataset["fare_amount"] > 0)
-        & (dataset["trip_distance"] < 400)
-        & (dataset["trip_distance"] > 0)
-        & (dataset["fare_amount"] < 1000)
-    ) | (~dataset.isna().any(axis=1))
+def filter_dataset(dataset: DataFrame):
+    filtered_dataset = dataset.dropna()
+    filtered_dataset = filtered_dataset[filtered_dataset["fare_amount"] > 0]
+    filtered_dataset = filtered_dataset[filtered_dataset["trip_distance"] < 400]
+    filtered_dataset = filtered_dataset[filtered_dataset["trip_distance"] > 0]
+    filtered_dataset = filtered_dataset[filtered_dataset["fare_amount"] < 1000]
+    return filtered_dataset
 
 
 def calculate_features(df: DataFrame):
@@ -64,8 +62,7 @@ def estimator_fn(estimator_params: Dict[str, Any] = {}):
 
 
 data = load_file_as_dataframe('datasets/nyc-taxi/sample.parquet', 'parquet')
-dataset_filter = create_dataset_filter(data)
-filtered_data = data[dataset_filter]
+filtered_data = filter_dataset(data)
 
 temporal_split_date = '2016-02-15'
 
@@ -80,5 +77,3 @@ model = Pipeline([
 
 model.fit(train_data, train_data.fare_amount)
 print(model.score(test_data, test_data.fare_amount))
-
-#print('Mean squared error:', mean_squared_error(model.predict(test_data), test_data.fare_amount))

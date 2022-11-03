@@ -183,10 +183,7 @@ def _log_mlinspect_results(dag, dag_node_to_lineage_df):
 
             # Hacky workaround, as pyarrow has insufficient array support at the moment
             if "image" in mod_df.columns:
-                serialized_image_column = orig_df['image'].map(
-                    #lambda arr: ':'.join([str(value) for value in np.ravel(arr)])
-                        lambda arr: np.ravel(arr)
-                )
+                serialized_image_column = orig_df['image'].map(lambda arr: np.ravel(arr))
                 mod_df = mod_df.drop(columns=['image'])
                 mod_df['image'] = serialized_image_column
 

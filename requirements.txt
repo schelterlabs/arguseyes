@@ -1,5 +1,4 @@
-#mlinspect[dev] @ git+https://github.com/stefan-grafberger/mlinspect.git@dd94830649c89dc713d38b7b44600edba73f1b46
-mlinspect[dev] @ git+https://github.com/stefan-grafberger/mlinspect.git@14c8f13af61e02e8dca623d374d919cb9d890e43
+mlinspect[dev] @ git+https://github.com/stefan-grafberger/mlinspect.git@6f30d6420d43b3de4b2d7875e6df3319a051b9e4
 importnb==0.6.2
 matplotlib==3.4.2
 mlflow==1.18
@@ -8,4 +7,4 @@ numba==0.53
 # icc-rt==2020.0.133
 pyyaml==5.4.1
 #pyarrow==4.0.1
-pyarrow==9.0.0
+pyarrow==10.0.0
