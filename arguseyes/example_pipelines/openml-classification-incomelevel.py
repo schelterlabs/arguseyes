@@ -56,7 +56,7 @@ def openmlflow(numerical_columns, categorical_columns):
             ('num', num_pipe, numerical_columns),
             ('cat', cat_pipe, categorical_columns),
         ])),
-        ('decisiontreeclassifier', DecisionTreeClassifier())])
+        ('decisiontreeclassifier', DecisionTreeClassifier(random_state=0))])
 
 
 data_location = 'datasets/income/'

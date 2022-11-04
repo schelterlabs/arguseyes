@@ -1,7 +1,7 @@
 import numpy as np
 from numba import njit, prange
 
-from arguseyes.refinements import Refinement
+from arguseyes.issues import Issue, IssueDetector
 from arguseyes.templates import SourceType, Source, Output
 
 
@@ -33,12 +33,12 @@ def _compute_shapley_values(X_train, y_train, X_test, y_test, K=1):
     return result
 
 
-class ShapleyValues(Refinement):
+class LabelErrors(IssueDetector):
 
     def __init__(self, k=1):
         self.k = k
 
-    def _compute(self, pipeline):
+    def detect(self, pipeline, params) -> Issue:
         X_train = pipeline.outputs[Output.X_TRAIN]
         y_train = pipeline.outputs[Output.Y_TRAIN]
 
@@ -81,7 +81,12 @@ class ShapleyValues(Refinement):
         self.log_tag('arguseyes.shapley_values.data_file', 'input-with-shapley-values.parquet')
         self.log_as_parquet_file(data, 'input-with-shapley-values.parquet')
 
-        return Source(fact_table_source.operator_id, fact_table_source.source_type, data)
+        #return Source(fact_table_source.operator_id, fact_table_source.source_type, data)
+        # TODO Implement me
+        has_label_errors = False
+
+        return Issue('label_errors', has_label_errors, {})
+
 
     @staticmethod
     def _find_shapley(polynomial, shapley_values_by_row_id):

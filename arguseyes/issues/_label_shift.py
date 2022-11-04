@@ -3,9 +3,10 @@ from scipy import stats
 from arguseyes.issues import IssueDetector, Issue
 from arguseyes.templates import Output
 
+
 class LabelShift(IssueDetector):
 
-    def _detect(self, pipeline) -> Issue:
+    def detect(self, pipeline, params) -> Issue:
 
         y_train = pipeline.outputs[Output.Y_TRAIN]    
         y_test = pipeline.outputs[Output.Y_TEST]

@@ -33,7 +33,7 @@ def evaluate_domain_classifier(X_one, X_two):
 
 class CovariateShift(IssueDetector):
 
-    def _detect(self, pipeline) -> Issue:
+    def detect(self, pipeline, params) -> Issue:
         X_train = pipeline.outputs[Output.X_TRAIN]
         X_test = pipeline.outputs[Output.X_TEST]
 

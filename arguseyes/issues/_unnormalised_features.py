@@ -3,6 +3,7 @@ import numpy as np
 from arguseyes.issues import Issue, IssueDetector
 from arguseyes.templates import Output
 
+
 class UnnormalisedFeatures(IssueDetector):
 
     def error_msg(self, issue) -> str:
@@ -12,7 +13,7 @@ class UnnormalisedFeatures(IssueDetector):
         return f'Found {num_non_zero_mean} non-binary features without zero mean and' + \
                f' {num_non_unit_variance} non-binary features without unit variance'
 
-    def _detect(self, pipeline) -> Issue:
+    def detect(self, pipeline, params) -> Issue:
         X_train = pipeline.outputs[Output.X_TRAIN]
         _, num_columns = X_train.shape
 

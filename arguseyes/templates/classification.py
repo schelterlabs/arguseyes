@@ -1,12 +1,8 @@
-import os
 import mlflow
-import logging
 import json
 
 from arguseyes.issues import IssueDetector
-from arguseyes.refinements import Refinement
 from arguseyes.templates import Output
-
 
 
 class ClassificationPipeline:
@@ -60,13 +56,11 @@ class ClassificationPipeline:
         mlflow.end_run()
         pass
 
-    def detect_issue(self, issue_detector: IssueDetector):
-        issue = issue_detector._detect(self)
+    def detect_issue(self, issue_detector: IssueDetector, issue_params):
+        issue = issue_detector.detect(self, issue_params)
 
+        # TODO id must be dependent on params...
         mlflow.set_tag(f'arguseyes.issues.{issue.id}.is_present', issue.is_present)
         mlflow.set_tag(f'arguseyes.issues.{issue.id}.details', json.dumps(issue.details))
 
         return issue
-
-    def compute(self, refinement: Refinement):
-        return refinement._compute(self)

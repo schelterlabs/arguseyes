@@ -6,7 +6,6 @@ import logging
 
 from arguseyes import ArgusEyes
 from arguseyes.issues import *
-from arguseyes.refinements import *
 
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
@@ -39,12 +38,14 @@ def main(yaml_file):
     logging.info(f'Changing to directory {working_directory}...')
     os.chdir(working_directory)
 
-    issues_by_name = {
+    issue_detectors_by_name = {
         'constant_features': ConstantFeatures(),
         'unnormalised_features': UnnormalisedFeatures(),
         'label_shift': LabelShift(),
         'covariate_shift': CovariateShift(),
-        'data_leakage': DataLeakage()
+        'data_leakage': DataLeakage(),
+        'fairness': Fairness(),
+        'label_errors': LabelErrors(),
     }
 
     logging.info(f'Storing artifacts via mlflow at {mlflow_artifact_storage_uri}...')
@@ -56,41 +57,27 @@ def main(yaml_file):
 
         issue_detected = False
 
-        for issue_name, issue_detector in issues_by_name.items():
-            if issues_to_detect is not None and issue_name in issues_to_detect:
-                logging.info(f'Looking for issue {issue_name}...')
-                issue = pipeline.detect_issue(issue_detector)
-                if not issue.is_present:
-                    logging.info('Not found.')
-                else:
-                    logging.warning(
-                        '\x1b[31;21m' + \
-                        '\n\n' + \
-                        '-' * 80 + \
-                        f'\n{issue_detector.error_msg(issue)}\n' + \
-                        '-' * 80 + '\n\x1b[0m')
-                    issue_detected = True
+        for an_issue in issues_to_detect:
 
-        if 'analyses' in pipeline_config:
-            for refinement in pipeline_config['analyses']:
-                refinement_info = refinement['analysis']
-                if refinement_info['name'] == 'input_usage':
-                    logging.info('Computing usage information for input records')
-                    pipeline.compute(InputUsage())
-                if refinement_info['name'] == 'shapley_values':
-                    if 'params' in refinement_info:
-                        k = refinement_info['params']['k']
-                        logging.info(f'Computing Shapley values for input records with k={k}')
-                        pipeline.compute(ShapleyValues(k))
-                    else:
-                        logging.info('Computing Shapley values for input records')
-                        pipeline.compute(ShapleyValues())
-                if refinement_info['name'] == 'fairness_metrics':
-                    sensitive_attribute = refinement_info['params']['sensitive_attribute']
-                    privileged_class = refinement_info['params']['privileged_class']
-                    logging.info(f'Computing fairness metrics with {sensitive_attribute} as sensitive attribute' +
-                                f' and {privileged_class} as privileged class')
-                    pipeline.compute(FairnessMetrics(sensitive_attribute, privileged_class))
+            issue = an_issue['issue']
+            issue_name = issue['name']
+            issue_params = {}
+            if 'params' in issue:
+                issue_params = issue['params']
+
+            issue_detector = issue_detectors_by_name[issue_name]
+            logging.info(f'Looking for issue {issue_name}...')
+            issue = pipeline.detect_issue(issue_detector, issue_params)
+            if not issue.is_present:
+                logging.info('Not found.')
+            else:
+                logging.warning(
+                    '\x1b[31;21m' + \
+                    '\n\n' + \
+                    '-' * 80 + \
+                    f'\n{issue_detector.error_msg(issue)}\n' + \
+                    '-' * 80 + '\n\x1b[0m')
+                issue_detected = True
 
     if issue_detected:
         logging.error(

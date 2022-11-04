@@ -14,10 +14,7 @@ class ConstantFeatures(IssueDetector):
         num_constant_features = len(issue.details['constant_feature_indices'])
         return f'Encountered {num_constant_features} constant feature(s)!'
 
-    def _detect(self, pipeline) -> Issue:
-
-        #from pprint import pprint   
-        #pprint(vars(pipeline))
+    def detect(self, pipeline, params) -> Issue:
 
         X_train = pipeline.outputs[Output.X_TRAIN]
         _, num_columns = X_train.shape
