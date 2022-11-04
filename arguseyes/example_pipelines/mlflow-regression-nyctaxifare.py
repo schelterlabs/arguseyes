@@ -65,16 +65,15 @@ def estimator_fn(estimator_params: Dict[str, Any] = {}):
 data = load_file_as_dataframe('datasets/nyc-taxi/sample.parquet', 'parquet')
 filtered_data = filter_dataset(data)
 
-temporal_split_date = '2016-02-15'
+temporal_split_date = pd.to_datetime('2016-02-15')
 
-train_data = filtered_data[filtered_data['tpep_dropoff_datetime'] <= temporal_split_date]
-test_data = filtered_data[filtered_data['tpep_dropoff_datetime'] >= temporal_split_date]
-
+train_data = filtered_data[filtered_data['tpep_dropoff_datetime'].dt.date <= temporal_split_date]
+test_data = filtered_data[filtered_data['tpep_dropoff_datetime'].dt.date >= temporal_split_date]
 
 model = Pipeline([
     ('featurization', transformer_fn()),
     ('learner', estimator_fn())
 ])
 
-model.fit(train_data, train_data.fare_amount)
-print(model.score(test_data, test_data.fare_amount))
+model.fit(train_data, train_data['fare_amount'])
+print(model.score(test_data, test_data['fare_amount']))
