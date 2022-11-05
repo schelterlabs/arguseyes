@@ -47,8 +47,7 @@ data_location = 'datasets/sneakers'
 
 train_data = pd.read_csv(f'{data_location}/product_images_train_with_labelerrors.csv',
                          converters={'image': decode_image})
-test_data = pd.read_csv(f'{data_location}/product_images_test.csv',
-                         converters={'image': decode_image})
+test_data = pd.read_csv(f'{data_location}/product_images_test.csv', converters={'image': decode_image})
 
 product_categories = pd.read_csv(f'{data_location}/product_categories.csv')
 train_data_with_categories = train_data.merge(product_categories, on='category_id')

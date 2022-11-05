@@ -5,8 +5,8 @@ pipeline:
   path: /Users/ssc/projects/arguseyes/arguseyes/example_pipelines/mlinspect-computervision-sneakers.py
   template: classification
   detect_issues:
-  analyses:
-    - analysis:
-        name: shapley_values
+    - issue:
+        name: label_errors
         params:
           k: 100
+          threshold: 0.03

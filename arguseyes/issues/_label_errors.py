@@ -1,9 +1,9 @@
 import numpy as np
 from numba import njit, prange
+import logging
 
 from arguseyes.issues import Issue, IssueDetector
 from arguseyes.templates import SourceType, Source, Output
-
 
 # removed cache=True because of https://github.com/numba/numba/issues/4908 need a workaround soon
 @njit(fastmath=True, parallel=True)
@@ -35,10 +35,11 @@ def _compute_shapley_values(X_train, y_train, X_test, y_test, K=1):
 
 class LabelErrors(IssueDetector):
 
-    def __init__(self, k=1):
-        self.k = k
-
     def detect(self, pipeline, params) -> Issue:
+
+        k = params['k']
+        threshold = params['threshold']
+
         X_train = pipeline.outputs[Output.X_TRAIN]
         y_train = pipeline.outputs[Output.Y_TRAIN]
 
@@ -54,7 +55,7 @@ class LabelErrors(IssueDetector):
                                                  np.squeeze(y_train),
                                                  X_test,
                                                  np.squeeze(y_test),
-                                                 self.k)
+                                                 k)
 
         lineage_X_train = pipeline.output_lineage[Output.X_TRAIN]
 
@@ -77,15 +78,36 @@ class LabelErrors(IssueDetector):
                 self._find_shapley(fact_table_lineage[row_index], shapley_values_by_row_id)
 
         self.log_tag('arguseyes.shapley_values.operator_id', fact_table_source.operator_id)
-        self.log_tag('arguseyes.shapley_values.k', self.k)
+        self.log_tag('arguseyes.shapley_values.k', k)
         self.log_tag('arguseyes.shapley_values.data_file', 'input-with-shapley-values.parquet')
         self.log_as_parquet_file(data, 'input-with-shapley-values.parquet')
 
-        #return Source(fact_table_source.operator_id, fact_table_source.source_type, data)
-        # TODO Implement me
-        has_label_errors = False
 
-        return Issue('label_errors', has_label_errors, {})
+        num_samples = len(shapley_values_by_row_id)
+        num_negative = int(np.sum(np.array(list(shapley_values_by_row_id.values())) < 0, axis=0))
+        fraction_negative = float(num_negative) / num_samples
+
+        logging.info(f'Found {num_negative} out of {num_samples} samples with negative Shapley value.')
+
+
+
+        has_too_many_label_errors = fraction_negative > threshold
+
+        issue_details = {
+            'num_samples': num_samples,
+            'num_erroneous': num_negative,
+            'fraction': fraction_negative
+        }
+
+        return Issue('label_errors', has_too_many_label_errors, issue_details)
+
+
+
+    def error_msg(self, issue) -> str:
+        details = issue.details
+        return f'Found {details["fraction"]*100:.2f}% ({details["num_erroneous"]}/{details["num_samples"]}) ' \
+               'of potentially mislabeled samples in the training data!'
+
 
 
     @staticmethod
