@@ -1,6 +1,5 @@
 import os
 import mlflow
-from mlflow.tracking import MlflowClient
 from PIL import Image
 import tempfile
 from contextlib import redirect_stdout
@@ -21,7 +20,7 @@ from mlinspect.inspections._inspection_input import OperatorType
 
 from arguseyes.templates.classification import ClassificationPipeline
 from arguseyes.extraction import feature_matrix_extractor, source_extractor
-from arguseyes.templates import Output, SourceType, Source
+from arguseyes.templates import Output
 
 
 def from_py_file(path_to_py_file, cmd_args=[]):
@@ -31,16 +30,11 @@ def from_py_file(path_to_py_file, cmd_args=[]):
     import sys
     logging.info(f'Patching sys.argv with {synthetic_cmd_args}')
     with patch.object(sys, 'argv', synthetic_cmd_args):
-        return _execute_pipeline(PipelineInspector.on_pipeline_from_py_file(path_to_py_file))
-
-
-def from_notebook(path_to_ipynb_file):
-    return _execute_pipeline(
-        PipelineInspector.on_pipeline_from_ipynb_file(path_to_ipynb_file))
+        return _execute_pipeline(PipelineInspector.on_pipeline_from_py_file(path_to_py_file), path_to_py_file)
 
 
 
-def _execute_pipeline(inspector: PipelineInspector):
+def _execute_pipeline(inspector: PipelineInspector, path_to_py_file):
     lineage_inspection = RowLineage(RowLineage.ALL_ROWS, [OperatorType.DATA_SOURCE, OperatorType.TRAIN_DATA,
                                                           OperatorType.TRAIN_LABELS, OperatorType.TEST_DATA,
                                                           OperatorType.TEST_LABELS, OperatorType.SCORE,
@@ -48,6 +42,11 @@ def _execute_pipeline(inspector: PipelineInspector):
     argument_capturing_inspection = ArgumentCapturing()
 
     mlflow.start_run()
+
+    with open(path_to_py_file) as source_code_file:
+        contents = source_code_file.read()
+        mlflow.log_param(f'arguseyes.pipeline_source', contents)
+
     logging.info(f'Created run {mlflow.active_run().info.run_id} for this invocation')
 
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -118,15 +117,18 @@ def _from_dag_and_lineage(dag, dag_node_to_lineage_df, log_results=True):
         Output.Y_PRED: lineage_y_pred
     }    
 
+    pipeline = ClassificationPipeline(train_sources, train_source_lineage, test_sources, test_source_lineage,
+                                      outputs, output_lineage)
+
     if log_results:
         _log_mlinspect_results(dag, dag_node_to_lineage_df)
+        pipeline.log_pipeline_details()
 
-    return ClassificationPipeline(train_sources, train_source_lineage, test_sources, test_source_lineage,
-                                  outputs, output_lineage)
+    return pipeline
 
 
-def from_storage(run_id, artifact_storage_uri):
-    run = MlflowClient(artifact_storage_uri).get_run(run_id)
+def from_storage(run_id):
+    run = mlflow.get_run(run_id)
 
     # Retrieve pickled DAG (as networkx.DiGraph) with read_gpickle
     dag_filename = os.path.join(run.info.artifact_uri, "arguseyes-dag.gpickle")

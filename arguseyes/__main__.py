@@ -3,6 +3,7 @@ import os
 import sys
 import yaml
 import logging
+import mlflow
 
 from arguseyes import ArgusEyes
 from arguseyes.issues import *
@@ -17,9 +18,6 @@ def main(yaml_file):
     logging.info(f'Reading configuration from {yaml_file}...')
     with open(yaml_file, 'r') as stream:
         config = yaml.safe_load(stream)
-
-    # TODO sanity checking of yaml contents
-    # TODO we should have constants for all the string keys here
 
     pipeline_config = config['pipeline']
     issues_to_detect = pipeline_config['detect_issues']
@@ -53,46 +51,50 @@ def main(yaml_file):
     eyes = ArgusEyes(series, mlflow_artifact_storage_uri)
 
 
-    with eyes.classification_pipeline_from_py_file(pipeline_path, cmd_args=synthetic_cmd_args) as pipeline:
+    pipeline = eyes.classification_pipeline_from_py_file(pipeline_path, cmd_args=synthetic_cmd_args)
 
-        issue_detected = False
+    issue_detected = False
 
-        for an_issue in issues_to_detect:
+    for an_issue in issues_to_detect:
 
-            issue = an_issue['issue']
-            issue_name = issue['name']
-            issue_params = {}
-            if 'params' in issue:
-                issue_params = issue['params']
+        issue = an_issue['issue']
+        issue_name = issue['name']
+        issue_params = {}
+        if 'params' in issue:
+            issue_params = issue['params']
 
-            issue_detector = issue_detectors_by_name[issue_name]
-            logging.info(f'Looking for issue {issue_name}...')
-            issue = pipeline.detect_issue(issue_detector, issue_params)
-            if not issue.is_present:
-                logging.info('Not found.')
-            else:
-                logging.warning(
-                    '\x1b[31;21m' + \
-                    '\n\n' + \
-                    '-' * 80 + \
-                    f'\n{issue_detector.error_msg(issue)}\n' + \
-                    '-' * 80 + '\n\x1b[0m')
-                issue_detected = True
+        issue_detector = issue_detectors_by_name[issue_name]
+        logging.info(f'Looking for issue {issue_name}...')
+        issue = pipeline.detect_issue(issue_detector, issue_params)
+        if not issue.is_present:
+            logging.info('Not found.')
+        else:
+            logging.warning(
+                '\x1b[31;21m' +
+                '\n\n' +
+                '-' * 80 +
+                f'\n{issue_detector.error_msg(issue)}\n' +
+                '-' * 80 + '\n\x1b[0m')
+            issue_detected = True
+
+    mlflow_run_id = mlflow.active_run().info.run_id
+    mlflow.end_run()
 
     if issue_detected:
         logging.error(
-            '\x1b[31;21m' + \
-            '\n\n' + \
-            '-' * 80 + \
-            '\n Pipeline fails ArgusEyes screening\n' + \
+            '\x1b[31;21m' +
+            '\n\n' +
+            '-' * 80 +
+            '\n Pipeline fails ArgusEyes screening!\n' +
+            f' Check the mlflow run {mlflow_run_id} for details.\n' +
             '-' * 80 + '\n\x1b[0m')
         sys.exit(os.EX_DATAERR)
     else:
         logging.info(
-            '\x1b[33;92m' + \
-            '\n\n' + \
-            '-' * 80 + \
-            '\n Pipeline passes ArgusEyes screening\n' + \
+            '\x1b[33;92m' +
+            '\n\n' +
+            '-' * 80 +
+            '\n Pipeline passes ArgusEyes screening\n' +
             '-' * 80 + '\n\x1b[0m')
 
         sys.exit(os.EX_OK)

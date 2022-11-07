@@ -4,7 +4,6 @@ artifact_storage_uri: /Users/ssc/projects/arguseyes/mlruns/
 pipeline:
   template: classification
   path: /Users/ssc/projects/arguseyes/arguseyes/example_pipelines/openml-classification-incomelevel.py
-  working_directory: /Users/ssc/projects/arguseyes/arguseyes/example_pipelines/
   detect_issues:
     - issue:
         name: fairness
@@ -12,4 +11,11 @@ pipeline:
           sensitive_attribute: sex
           privileged_class: Male
           metric: equal_opportunity
+          threshold: 0.01
+    - issue:
+        name: fairness
+        params:
+          sensitive_attribute: race
+          privileged_class: White
+          metric: statistical_parity
           threshold: 0.01

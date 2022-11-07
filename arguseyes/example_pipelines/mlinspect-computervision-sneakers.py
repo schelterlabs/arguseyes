@@ -65,14 +65,11 @@ test_images = test_data_with_categories[test_data_with_categories['category_name
 y_train = label_binarize(train_images['category_name'], classes=categories_to_distinguish)
 y_test = label_binarize(test_images['category_name'], classes=categories_to_distinguish)
 
-print(len(y_test))
-
 pipeline = Pipeline(steps=[
     ('normalisation', FunctionTransformer(normalise_image)),
     ('reshaping', FunctionTransformer(reshape_images)),
     ('model', KerasClassifier(create_cnn, epochs=10))
 ])
-
 
 model = pipeline.fit(train_images[['image']], y_train)
 

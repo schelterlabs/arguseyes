@@ -17,10 +17,8 @@ class ClassificationPipeline:
         self.outputs = outputs
         self.output_lineage = output_lineage
 
-        self._log_pipeline_details()
 
-
-    def _log_pipeline_details(self):
+    def log_pipeline_details(self):
 
         X_train = self.outputs[Output.X_TRAIN]
         X_test = self.outputs[Output.X_TEST]
@@ -46,15 +44,6 @@ class ClassificationPipeline:
         mlflow.log_param("arguseyes.X_test.num_rows", X_test.shape[0])
         mlflow.log_param("arguseyes.X_test.num_features", X_test.shape[1])
 
-
-
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        mlflow.end_run()
-        pass
 
     def detect_issue(self, issue_detector: IssueDetector, issue_params):
         issue = issue_detector.detect(self, issue_params)

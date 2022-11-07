@@ -146,7 +146,7 @@ class Fairness(IssueDetector):
         logging.info(f'Fairness metric {metric} for sensitive attribute {sensitive_attribute} ' + \
                      f'with privileged class {privileged_class} is {metric_value}.')
 
-        is_violated = abs(metric_value) > threshold
+        is_violated = metric_value < threshold
 
         issue_details = copy.deepcopy(params)
         issue_details['metric_value'] = metric_value
@@ -157,7 +157,7 @@ class Fairness(IssueDetector):
     def error_msg(self, issue) -> str:
         return f'Found fairness violation for sensitive attribute {issue.details["sensitive_attribute"]} ' + \
                f'with privileged class {issue.details["privileged_class"]}:\nMetric {issue.details["metric"]} ' + \
-               f' is above threshold {issue.details["threshold"]} with value {issue.details["metric_value"]:.5f}!'
+               f'is below threshold {issue.details["threshold"]} with value {issue.details["metric_value"]:.5f}!'
 
 
     def _group_membership_from_fact_table(self, fact_table_source, fact_table_lineage, sensitive_attribute,
