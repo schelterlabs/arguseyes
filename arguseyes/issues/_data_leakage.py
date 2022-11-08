@@ -6,14 +6,17 @@ class DataLeakage(IssueDetector):
 
     def detect(self, pipeline, params) -> Issue:
 
-        train_lineage = frozenset([frozenset(lineage) for lineage in pipeline.output_lineage[Output.X_TRAIN]])
-        test_lineage = frozenset([frozenset(lineage) for lineage in pipeline.output_lineage[Output.X_TEST]])
+        train_provenance= frozenset([frozenset(provenance) for provenance in pipeline.output_lineage[Output.X_TRAIN]])
+        test_provenance = frozenset([frozenset(provenance) for provenance in pipeline.output_lineage[Output.X_TEST]])
 
-        overlap_lineage = train_lineage & test_lineage
-        num_leaked_records = len(overlap_lineage)
+        leaked = train_provenance & test_provenance
+        num_leaked_records = len(leaked)
         has_leakage = num_leaked_records > 0
 
-        # TODO maybe output tuple ids in the future
+        if has_leakage:
+            self.log_tag('arguseyes.data_leakage.provenance_file', 'leaked_tuples.pickle')
+            self.log_as_pickle_file(leaked, 'leaked_tuples.pickle')
+
         return Issue('data_leakage', has_leakage, {'num_leaked_records': num_leaked_records})
 
     def error_msg(self, issue) -> str:

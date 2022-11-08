@@ -5,4 +5,5 @@ pipeline:
   path: /Users/ssc/projects/arguseyes/arguseyes/example_pipelines/mlflow-regression-nyctaxifare.py
   template: classification
   detect_issues:
-     - data_leakage
+    - issue:
+        name: data_leakage

@@ -59,6 +59,10 @@ class PipelineRun:
 
         return data_with_provenance[columns], prov_strs
 
+    def load_input_with_provenance(self, index):
+        path = f'{self.run.info.artifact_uri}/arguseyes-dagnode-{index}-lineage-df.parquet'
+        return pd.read_parquet(path)
+
     def show_source_code(self):
         source_code = self.run.data.params['arguseyes.pipeline_source']
         return md(f"```Python\n{source_code}\n```")
@@ -130,8 +134,8 @@ class PipelineRun:
                 'text-outline-width': 2,
                 'text-outline-color': 'data(color)',
                 'background-color': 'data(color)'
-            }
-        },
+                }
+            },
             {
                 'selector': ':selected',
                 'css': {
@@ -140,7 +144,15 @@ class PipelineRun:
                     'target-arrow-color': 'black',
                     'source-arrow-color': 'black',
                     'text-outline-color': 'black'
-                }}
+                }
+            },
+            {
+                "selector": "edge",
+                "style": {
+                    'curve-style': 'bezier',
+                    'target-arrow-shape': 'triangle'
+                }
+            },
         ])
 
         return cytoscapeobj

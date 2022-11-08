@@ -8,7 +8,7 @@ import tempfile
 import mlflow
 import pyarrow as pa
 import pyarrow.parquet as pq
-
+import pickle
 
 @dataclasses.dataclass
 class Issue:
@@ -36,4 +36,11 @@ class IssueDetector(ABC):
             temp_filename = os.path.join(tmpdirname, filename_to_assign)
             table = pa.Table.from_pandas(dataframe, preserve_index=True)
             pq.write_table(table, temp_filename)
+            mlflow.log_artifact(temp_filename)
+
+    def log_as_pickle_file(self, object, filename_to_assign):
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            temp_filename = os.path.join(tmpdirname, filename_to_assign)
+            with open(temp_filename, 'wb') as out_file:
+                pickle.dump(object, out_file, protocol=pickle.HIGHEST_PROTOCOL)
             mlflow.log_artifact(temp_filename)
