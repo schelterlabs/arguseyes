@@ -8,5 +8,4 @@ pipeline:
     - issue:
         name: label_errors
         params:
-          k: 100
-          threshold: 0.03
+          max_fraction: 0.03

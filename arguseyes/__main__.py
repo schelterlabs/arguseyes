@@ -15,6 +15,12 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 @click.command()
 @click.argument("yaml_file")
 def main(yaml_file):
+
+    logging.info('')
+    logging.info(f'#' * 80)
+    logging.info('  SETTING UP ARGUS EYES')
+    logging.info(f'#' * 80)
+
     logging.info(f'Reading configuration from {yaml_file}...')
     with open(yaml_file, 'r') as stream:
         config = yaml.safe_load(stream)
@@ -47,11 +53,21 @@ def main(yaml_file):
     }
 
     logging.info(f'Storing artifacts via mlflow at {mlflow_artifact_storage_uri}...')
+
+    logging.info('')
+    logging.info(f'#' * 80)
+    logging.info('  STARTING INSTRUMENTED EXECUTION OF THE ML PIPELINE')
+    logging.info(f'#' * 80)
     logging.info(f'Executing pipeline {pipeline_path} for the series {series}')
     eyes = ArgusEyes(series, mlflow_artifact_storage_uri)
 
 
     pipeline = eyes.classification_pipeline_from_py_file(pipeline_path, cmd_args=synthetic_cmd_args)
+
+    logging.info('')
+    logging.info(f'#' * 80)
+    logging.info('  SCREENING PIPELINE FOR ISSUES')
+    logging.info(f'#' * 80)
 
     issue_detected = False
 

@@ -69,6 +69,8 @@ temporal_split_date = pd.to_datetime('2016-02-15')
 
 train_data = filtered_data[filtered_data['tpep_dropoff_datetime'].dt.date <= temporal_split_date]
 test_data = filtered_data[filtered_data['tpep_dropoff_datetime'].dt.date >= temporal_split_date]
+# FIX for leakage: make sure that train/test are disjunct by changing the predicate
+# test_data = filtered_data[filtered_data['tpep_dropoff_datetime'].dt.date > temporal_split_date]
 
 model = Pipeline([
     ('featurization', transformer_fn()),

@@ -11,11 +11,11 @@ pipeline:
           sensitive_attribute: sex
           privileged_class: Male
           metric: equal_opportunity
-          threshold: 0.01
+          max_difference: 0.01
     - issue:
         name: fairness
         params:
           sensitive_attribute: race
           privileged_class: White
           metric: statistical_parity
-          threshold: 0.01
+          max_difference: 0.02

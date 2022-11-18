@@ -47,6 +47,12 @@ data_location = 'datasets/sneakers'
 
 train_data = pd.read_csv(f'{data_location}/product_images_train_with_labelerrors.csv',
                          converters={'image': decode_image})
+
+# FIX label errors: Rerun with a cleaned version of the data
+#train_data = pd.read_csv(f'{data_location}/product_images_train_clean.csv',
+#                         converters={'image': decode_image})
+
+
 test_data = pd.read_csv(f'{data_location}/product_images_test.csv', converters={'image': decode_image})
 
 product_categories = pd.read_csv(f'{data_location}/product_categories.csv')

@@ -62,6 +62,11 @@ def _execute_pipeline(inspector: PipelineInspector, path_to_py_file):
                     .execute()
                 mlflow.log_artifact(tmpfile.name)
 
+    logging.info('')
+    logging.info(f'#' * 80)
+    logging.info('  CAPTURING PIPELINE INTERMEDIATES')
+    logging.info(f'#' * 80)
+
     captured_arguments = {
         node: node_results[argument_capturing_inspection]
         for node, node_results in result.dag_node_to_inspection_results.items()
@@ -92,9 +97,17 @@ def _from_dag_and_lineage(dag, dag_node_to_lineage_df, log_results=True):
     test_sources, test_source_lineage = source_extractor.extract_test_sources(dag, dag_node_to_lineage_df)
 
     X_train, lineage_X_train = feature_matrix_extractor.extract_train_feature_matrix(dag_node_to_lineage_df)
-    logging.info(f'Extracted feature matrix X_train with {X_train.shape[0]} rows and {X_train.shape[1]} columns')
     X_test, lineage_X_test = feature_matrix_extractor.extract_test_feature_matrix(dag_node_to_lineage_df)
-    logging.info(f'Extracted feature matrix X_test with {X_test.shape[0]} rows and {X_test.shape[1]} columns')
+
+    # Still hacky, we need a principled way to flatten tensors for CV pipelines
+    if len(X_train.shape) == 3:
+        logging.info(f'Extracted feature matrix X_train with {int(X_train.shape[0]/X_train.shape[1])} rows '
+                     f'and {X_train.shape[1]**2} columns')
+        logging.info(f'Extracted feature matrix X_test with {int(X_test.shape[0]/X_test.shape[1])} rows '
+                     f'and {X_test.shape[1]**2} columns')
+    else:
+        logging.info(f'Extracted feature matrix X_train with {X_train.shape[0]} rows and {X_train.shape[1]} columns')
+        logging.info(f'Extracted feature matrix X_test with {X_test.shape[0]} rows and {X_test.shape[1]} columns')
 
     y_train, lineage_y_train = feature_matrix_extractor.extract_train_labels(dag_node_to_lineage_df)
     y_test, lineage_y_test = feature_matrix_extractor.extract_test_labels(dag_node_to_lineage_df)

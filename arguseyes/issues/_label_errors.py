@@ -3,7 +3,8 @@ from numba import njit, prange
 import logging
 
 from arguseyes.issues import Issue, IssueDetector
-from arguseyes.templates import SourceType, Source, Output
+from arguseyes.templates import SourceType, Output
+
 
 # removed cache=True because of https://github.com/numba/numba/issues/4908 need a workaround soon
 @njit(fastmath=True, parallel=True)
@@ -37,8 +38,12 @@ class LabelErrors(IssueDetector):
 
     def detect(self, pipeline, params) -> Issue:
 
-        k = params['k']
-        threshold = params['threshold']
+        if 'k' in params:
+            k = params['k']
+        else:
+            k = 100
+
+        threshold = params['max_fraction']
 
         X_train = pipeline.outputs[Output.X_TRAIN]
         y_train = pipeline.outputs[Output.Y_TRAIN]
