@@ -27,7 +27,7 @@ jobs:
       - name: Install ArgusEyes
         run: |
           pip install -U pip
-          pip install git+https://github.com/schelterlabs/arguseyes.git
+          pip install git+https://github.com/schelterlabs/arguseyes.git@sigmod-demo
 
       - name: Screen pipeline with ArgusEyes
         run: python -m arguseyes ${{ inputs.pipeline-config-path }}
