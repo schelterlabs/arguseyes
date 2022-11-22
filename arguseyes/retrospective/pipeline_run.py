@@ -124,6 +124,14 @@ class PipelineRun:
         for edge in dag.edges:
             plan.add_edge(edge[0].node_id, edge[1].node_id)
 
+        while True:
+            nodes_to_remove = [node for node, data in plan.nodes(data=True)
+                               if data['operator_name'] == 'π' and len(list(plan.successors(node))) == 0]
+            if len(nodes_to_remove) == 0:
+                break
+            else:
+                plan.remove_nodes_from(nodes_to_remove)
+
         cytoscapeobj = ipycytoscape.CytoscapeWidget()
         cytoscapeobj.graph.add_graph_from_networkx(plan, directed=True)
 
