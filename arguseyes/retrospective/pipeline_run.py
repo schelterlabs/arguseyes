@@ -67,21 +67,25 @@ class PipelineRun:
         source_code = self.run.data.params['arguseyes.pipeline_source']
         return md(f"```Python\n{source_code}\n```")
 
-    def show_plan(self):
+    def explore_data(self):
         dag = self._load_dag()
 
         plan = nx.DiGraph()
 
-        data_color = '#355C7D'
-        feature_encoding_color = '#C06C84'
-        model_color = '#F67280'
+        #data_color = '#355C7D'
+        #feature_encoding_color = '#C06C84'
+        #model_color = '#F67280'
+        data_color = '#C06C84'
+        model_color = '#355C7D'
+        feature_encoding_color = '#355C7D'
 
         for node in dag.nodes:
             node_id = node.node_id
             operator_type = str(node.operator_info.operator).split('.')[1]
 
             operator_name = operator_type
-            color = '#6C5B7B'
+            #color = '#6C5B7B'
+            color = '#355C7D'
 
             if operator_type == 'JOIN':
                 operator_name = '⋈'
@@ -155,4 +159,103 @@ class PipelineRun:
             },
         ])
 
-        return cytoscapeobj
+        from IPython.display import Markdown, display
+        from ipywidgets import Output, HBox
+        import numpy as np
+
+        out = Output(layout={'border': '1px solid black', 'width': '1400px'})
+
+        def log_clicks(display_node):
+            node_id = display_node['data']['id']
+            dag = self._load_dag()
+
+            dag_node = None
+            for node in dag.nodes:
+                if int(node.node_id) == int(node_id):
+                    dag_node = node
+
+            out.clear_output()
+            with out:
+                operator_type = str(dag_node.operator_info.operator).split('.')[1]
+                if operator_type == 'DATA_SOURCE':
+                    md = f'### Input {node_id}\n'
+
+                    line = dag_node.optional_code_info.code_reference.lineno
+                    md += f' * Originating from line {line} in the source code:\n'
+                    code_lines = ['    ' + line for line in dag_node.optional_code_info.source_code.split('\n')]
+                    code_lines = '\n'.join(code_lines)
+
+                    md += "```Python\n"
+                    md += code_lines
+                    md += "\n```"
+
+                    md += '\n * Load the data and provenance of this input as follows:\n'
+                    md += f'```Python\n    data, provenance = run.load_input({node_id})\n```\n'
+
+                    display(Markdown(md))
+
+                    data, _ = self.load_input(node_id)
+                    display(data)
+
+                if operator_type == 'TRAIN_DATA':
+                    md = f'### Training feature matrix of the pipeline\n'
+
+                    matrix, _ = self.load_X_train()
+
+                    md += f" * Number of rows {matrix.shape[0]}\n"
+                    md += f" * Number of columns {matrix.shape[1]}\n"
+
+                    md += '\n * Load this matrix with its provenance as follows:\n'
+                    md += f'```Python\n X_train, prov = run.load_X_train()\n```\n'
+
+                    display(Markdown(md))
+                    display(matrix)
+
+                if operator_type == 'TRAIN_LABELS':
+                    md = f'### Training labels of the pipeline\n'
+
+                    matrix, _ = self.load_y_train()
+
+                    md += f" * Number of entries {matrix.shape[0]}\n"
+                    md += f" * Mean value {round(np.mean(matrix), 3)}\n"
+
+                    md += '\n * Load this matrix with its provenance as follows:\n'
+                    md += f'```Python\n Xy_train, prov = run.load_y_train()\n```\n'
+
+                    display(Markdown(md))
+                    display(matrix)
+
+                if operator_type == 'TEST_DATA':
+                    md = f'### Test feature matrix of the pipeline\n'
+
+                    matrix, _ = self.load_X_test()
+
+                    md += f" * Number of rows {matrix.shape[0]}\n"
+                    md += f" * Number of columns {matrix.shape[1]}\n"
+
+                    md += '\n * Load this matrix with its provenance as follows:\n'
+                    md += f'```Python\n X_test, prov = run.load_X_test()\n```\n'
+
+                    display(Markdown(md))
+                    display(matrix)
+
+                if operator_type == 'TEST_LABELS':
+                    md = f'### Test labels of the pipeline\n'
+
+                    matrix, _ = self.load_y_test()
+
+                    md += f" * Number of entries {matrix.shape[0]}\n"
+                    md += f" * Mean value {round(np.mean(matrix), 3)}\n"
+
+                    md += '\n * Load this matrix with its provenance as follows:\n'
+                    md += f'```Python\n Xy_test, prov = run.load_y_test()\n```\n'
+
+                    display(Markdown(md))
+                    display(matrix)
+
+        cytoscapeobj.on('node', 'click', log_clicks)
+
+        sidebyside = HBox([cytoscapeobj, out])
+        display(Markdown('# Pipeline Data Explorer'))
+        display(sidebyside)
+        #return cytoscapeobj
