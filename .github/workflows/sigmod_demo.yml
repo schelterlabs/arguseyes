@@ -1,0 +1,9 @@
+name: SIGMOD 2023 demo examples
+
+on: [ push, workflow_dispatch ]
+
+jobs:
+  example-mlflow-regression-nyctaxifare-dataleakage:
+    uses: ./.github/workflows/reusable.yml
+    with:
+      pipeline-config-path: arguseyes/example_pipelines/mlflow-regression-nyctaxifare-dataleakage.yaml

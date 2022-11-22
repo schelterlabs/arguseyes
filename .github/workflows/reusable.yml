@@ -1,0 +1,39 @@
+name: Reusable Argus Eyes workflow
+
+on:
+  workflow_call:
+    inputs:
+      pipeline-config-path:
+        required: true
+        type: string
+
+jobs:
+  reusable-workflow-job:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ 3.9 ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Setup Graphviz
+        uses: ts-graphviz/setup-graphviz@v1
+
+      - name: Install ArgusEyes
+        run: |
+          pip install -U pip
+          pip install git+https://github.com/schelterlabs/arguseyes.git@sigmod-demo
+
+      - name: Screen pipeline with ArgusEyes
+        run: python -m arguseyes ${{ inputs.pipeline-config-path }}
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: mlruns-artifacts
+          path: /home/runner/work/arguseyes-example/mlruns
