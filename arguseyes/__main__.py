@@ -35,8 +35,8 @@ def main(yaml_file):
         logging.info(f"Synthetic commandline arguments specified: {synthetic_cmd_args}")
 
     series = config['series']
-    mlflow_artifact_storage_uri = config['artifact_storage_uri']
-    pipeline_path = pipeline_config['path']
+    mlflow_artifact_storage_uri = os.path.expandvars(config['artifact_storage_uri'])
+    pipeline_path = os.path.expandvars(pipeline_config['path'])
 
     working_directory = os.path.dirname(pipeline_path)
     logging.info(f'Changing to directory {working_directory}...')
